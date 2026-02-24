@@ -1,6 +1,10 @@
-import { Embed, createEvent } from 'seyfert';
+import { ActionRow, Button, Embed, createEvent } from 'seyfert';
+import { ButtonStyle } from 'seyfert/lib/types';
 
 const PREFIX = process.env.BOT_PREFIX ?? '!';
+const DASHBOARD_URL = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
+const INVITE_URL = process.env.BOT_INVITE_URL ?? 'https://discord.com/oauth2/authorize?client_id=1475710537332691096&scope=bot%20applications.commands&permissions=274878024704';
+const SUPPORT_URL = process.env.BOT_SUPPORT_URL ?? 'https://discord.gg/pawsitive';
 
 function toUser(entity: unknown) {
   const maybe = entity as { user?: { id: string; username: string; avatarURL?: (...args: any[]) => string | null }; id?: string; username?: string; avatarURL?: (...args: any[]) => string | null };
@@ -68,7 +72,13 @@ export default createEvent({
             },
           ]);
 
-        await message.reply({ embeds: [embed] });
+        const actions = new ActionRow<Button>().addComponents(
+          new Button().setStyle(ButtonStyle.Link).setLabel('Dashboard').setURL(DASHBOARD_URL),
+          new Button().setStyle(ButtonStyle.Link).setLabel('Invite').setURL(INVITE_URL),
+          new Button().setStyle(ButtonStyle.Link).setLabel('Support').setURL(SUPPORT_URL)
+        );
+
+        await message.reply({ embeds: [embed], components: [actions] });
         break;
       }
 
@@ -137,16 +147,25 @@ export default createEvent({
       }
 
       case 'help': {
-        await message.reply({
-          content: [
-            `🐾 Prefix commands (${PREFIX})`,
-            `- ${PREFIX}ping`,
-            `- ${PREFIX}info`,
-            `- ${PREFIX}avatar [@user]`,
-            `- ${PREFIX}server`,
-            `- ${PREFIX}boop @user`,
-          ].join('\n'),
-        });
+        const embed = new Embed()
+          .setTitle('📘 Pawsitive Help')
+          .setColor(0x7f6cff)
+          .setDescription([
+            `Prefix: \`${PREFIX}\``,
+            '',
+            `• \`${PREFIX}ping\``,
+            `• \`${PREFIX}info\``,
+            `• \`${PREFIX}avatar [@user]\``,
+            `• \`${PREFIX}server\``,
+            `• \`${PREFIX}boop @user\``,
+          ].join('\n'));
+
+        const actions = new ActionRow<Button>().addComponents(
+          new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(DASHBOARD_URL),
+          new Button().setStyle(ButtonStyle.Link).setLabel('Use Slash Commands').setURL('https://discord.com/channels/@me')
+        );
+
+        await message.reply({ embeds: [embed], components: [actions] });
         break;
       }
 

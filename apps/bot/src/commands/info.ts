@@ -1,5 +1,6 @@
 import { Command, Declare, type CommandContext } from 'seyfert';
-import { Embed } from 'seyfert/lib/builders';
+import { ActionRow, Button, Embed } from 'seyfert/lib/builders';
+import { ButtonStyle } from 'seyfert/lib/types';
 
 @Declare({
   name: 'info',
@@ -7,6 +8,10 @@ import { Embed } from 'seyfert/lib/builders';
 })
 export default class InfoCommand extends Command {
   async run(ctx: CommandContext) {
+    const dashboardUrl = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
+    const inviteUrl = process.env.BOT_INVITE_URL ?? 'https://discord.com/oauth2/authorize?client_id=1475710537332691096&scope=bot%20applications.commands&permissions=274878024704';
+    const supportUrl = process.env.BOT_SUPPORT_URL ?? 'https://discord.gg/pawsitive';
+
     const embed = new Embed()
       .setTitle('🐾 Pawsitive Bot')
       .setDescription('A professional furry-themed Discord bot platform with advanced image interactions!')
@@ -33,9 +38,9 @@ export default class InfoCommand extends Command {
         {
           name: '🔗 Links',
           value: [
-            '[Dashboard](https://pawsitive.app)',
-            '[Support Server](https://discord.gg/pawsitive)',
-            '[GitHub](https://github.com/yourname/pawsitive)',
+            `[Dashboard](${dashboardUrl})`,
+            `[Support Server](${supportUrl})`,
+            '[GitHub](https://github.com/Chere3/pawsitive)',
           ].join('\n'),
           inline: false,
         },
@@ -43,7 +48,13 @@ export default class InfoCommand extends Command {
       .setFooter({ text: 'Made with 💜 and Seyfert' })
       .setTimestamp();
 
-    await ctx.write({ embeds: [embed] });
+    const actions = new ActionRow<Button>().addComponents(
+      new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(dashboardUrl),
+      new Button().setStyle(ButtonStyle.Link).setLabel('Invite Bot').setURL(inviteUrl),
+      new Button().setStyle(ButtonStyle.Link).setLabel('Support').setURL(supportUrl)
+    );
+
+    await ctx.write({ embeds: [embed], components: [actions] });
   }
 }
 
