@@ -1,0 +1,27 @@
+{
+  "name": "@pawsitive/api",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "build": "tsc",
+    "start": "bun run src/index.ts",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No linter configured yet'"
+  },
+  "dependencies": {
+    "@pawsitive/config": "workspace:*",
+    "@pawsitive/shared": "workspace:*",
+    "@pawsitive/types": "workspace:*",
+    "elysia": "^1.2.19",
+    "@elysiajs/cors": "^1.2.4",
+    "@elysiajs/swagger": "^1.2.8",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.6",
+    "bun-types": "^1.2.3",
+    "typescript": "^5.7.3"
+  }
+}

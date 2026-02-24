@@ -1,0 +1,153 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StatusCard from '../components/StatusCard.astro';
+import FeatureCard from '../components/FeatureCard.astro';
+---
+
+<Layout title="Pawsitive - Dashboard">
+  <main class="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="text-4xl">🐾</div>
+            <h1 class="text-3xl font-bold text-gray-900">Pawsitive</h1>
+          </div>
+          <nav class="hidden md:flex space-x-8">
+            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Dashboard</a>
+            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Commands</a>
+            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Settings</a>
+            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Docs</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Welcome Section -->
+      <section class="mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">
+          Welcome to Pawsitive! 🎉
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl">
+          A professional furry-themed Discord bot platform with advanced image interactions,
+          moderation tools, and a beautiful dashboard.
+        </p>
+      </section>
+
+      <!-- Status Section -->
+      <section class="mb-12">
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">Bot Status</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatusCard
+            title="Status"
+            value="Online"
+            icon="✅"
+            color="green"
+          />
+          <StatusCard
+            title="Guilds"
+            value="0"
+            icon="🏠"
+            color="blue"
+          />
+          <StatusCard
+            title="Users"
+            value="0"
+            icon="👥"
+            color="purple"
+          />
+          <StatusCard
+            title="Uptime"
+            value="0h 0m"
+            icon="⏱️"
+            color="indigo"
+          />
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="mb-12">
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">Features</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FeatureCard
+            title="Image Processing"
+            description="Advanced image manipulation and processing capabilities"
+            icon="🖼️"
+            status="In Development"
+          />
+          <FeatureCard
+            title="Moderation"
+            description="Comprehensive moderation tools for your server"
+            icon="🛡️"
+            status="Planned"
+          />
+          <FeatureCard
+            title="Fun Commands"
+            description="Engaging and entertaining commands for your community"
+            icon="🎮"
+            status="In Development"
+          />
+          <FeatureCard
+            title="Custom Reactions"
+            description="Create custom reactions and responses"
+            icon="⚡"
+            status="Planned"
+          />
+          <FeatureCard
+            title="Analytics"
+            description="Detailed analytics and insights about your server"
+            icon="📊"
+            status="Planned"
+          />
+          <FeatureCard
+            title="API Access"
+            description="Full API access for custom integrations"
+            icon="🔌"
+            status="Active"
+          />
+        </div>
+      </section>
+
+      <!-- Quick Actions -->
+      <section>
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <button class="btn-primary">
+              Invite Bot
+            </button>
+            <button class="btn-secondary">
+              View Commands
+            </button>
+            <button class="btn-secondary">
+              Support Server
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="text-center text-gray-600">
+          <p>Made with 💜 using Astro, Seyfert, and Elysia</p>
+          <p class="mt-2 text-sm">© 2026 Pawsitive. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </main>
+</Layout>
+
+<style>
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors;
+  }
+</style>

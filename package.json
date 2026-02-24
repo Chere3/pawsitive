@@ -1,0 +1,24 @@
+{
+  "name": "pawsitive",
+  "version": "1.0.0",
+  "description": "Professional furry-themed Discord bot platform with advanced image interactions",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean",
+    "bot:dev": "pnpm --filter @pawsitive/bot dev",
+    "api:dev": "pnpm --filter @pawsitive/api dev",
+    "dashboard:dev": "pnpm --filter @pawsitive/dashboard dev"
+  },
+  "keywords": ["discord", "bot", "furry", "monorepo"],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.0",
+  "devDependencies": {
+    "@types/node": "^22.10.6",
+    "typescript": "^5.7.3"
+  }
+}
