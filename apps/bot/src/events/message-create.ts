@@ -1,6 +1,7 @@
 import { ActionRow, Button, createEvent } from 'seyfert';
 import { ButtonStyle } from 'seyfert/lib/types';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { buildCategoryHelp, buildCommandHelp, buildHelpOverview, findCategory, findCommand } from '../lib/help-center.js';
 
 const PREFIX = process.env.BOT_PREFIX ?? '!';
 const DASHBOARD_URL = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
@@ -32,7 +33,7 @@ export default createEvent({
     if (!message.content?.startsWith(PREFIX)) return;
     if (message.author?.bot) return;
 
-    const [rawName] = message.content.slice(PREFIX.length).trim().split(/\s+/);
+    const [rawName, ...args] = message.content.slice(PREFIX.length).trim().split(/\s+/);
     const command = (rawName ?? '').toLowerCase();
 
     if (!command) return;
@@ -155,23 +156,36 @@ export default createEvent({
       }
 
       case 'help': {
-        const embed = createPawsitiveEmbed('Help Center', 'primary')
-          .setDescription([
-            `• \`${PREFIX}ping\``,
-            `• \`${PREFIX}info\``,
-            `• \`${PREFIX}avatar [@user]\``,
-            `• \`${PREFIX}server\``,
-            `• \`${PREFIX}boop @user\``,
-            '',
-            `> **Uso:** \`${PREFIX}<comando> [args]\``,
-          ].join('\n'));
+        const query = args[0];
 
-        const actions = new ActionRow<Button>().addComponents(
-          new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(DASHBOARD_URL),
-          new Button().setStyle(ButtonStyle.Link).setLabel('Use Slash Commands').setURL('https://discord.com/channels/@me')
+        if (query) {
+          const asCommand = findCommand(query);
+          if (asCommand) {
+            await message.reply({ embeds: [buildCommandHelp(asCommand, PREFIX)] });
+            break;
+          }
+
+          const asCategory = findCategory(query);
+          if (asCategory) {
+            await message.reply({ embeds: [buildCategoryHelp(asCategory, PREFIX)] });
+            break;
+          }
+
+          const notFound = createPawsitiveEmbed('Unknown help target', 'danger').setDescription([
+            `No command/category found for: **${query}**`,
+            '',
+            `> **Uso:** \`${PREFIX}help [category|command]\``,
+          ].join('\n'));
+          await message.reply({ embeds: [notFound] });
+          break;
+        }
+
+        const page = buildHelpOverview(0, PREFIX);
+        const linkRow = new ActionRow<Button>().addComponents(
+          new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(DASHBOARD_URL)
         );
 
-        await message.reply({ embeds: [embed], components: [actions] });
+        await message.reply({ embeds: [page.embed], components: [...page.components, linkRow] });
         break;
       }
 
