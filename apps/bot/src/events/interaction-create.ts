@@ -14,9 +14,13 @@ export default createEvent({
     const prefix = process.env.BOT_PREFIX ?? '!';
     const page = buildHelpOverview(pageIndex, prefix);
 
-    await interaction.update({
-      embeds: [page.embed],
-      components: page.components,
-    });
+    try {
+      await interaction.update({
+        embeds: [page.embed],
+        components: page.components,
+      });
+    } catch {
+      // Ignore expired/unknown interactions (Discord 10062)
+    }
   },
 });
