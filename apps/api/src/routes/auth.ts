@@ -36,36 +36,57 @@ export const authRouter = new Elysia({ prefix: '/auth' })
     discordUrl.searchParams.set('prompt', 'consent');
     discordUrl.searchParams.set('state', state);
 
-    set.redirect = discordUrl.toString();
     set.status = 302;
+    set.headers.Location = discordUrl.toString();
 
-    return;
+    return {
+      success: true,
+      redirectTo: discordUrl.toString(),
+    };
   })
   .get('/discord/callback', ({ query, set }) => {
     const code = typeof query.code === 'string' ? query.code : undefined;
     const state = typeof query.state === 'string' ? query.state : undefined;
     const error = typeof query.error === 'string' ? query.error : undefined;
+    const dashboardUrl = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
 
     if (error) {
-      set.status = 400;
+      const target = new URL('/login', dashboardUrl);
+      target.searchParams.set('error', error);
+      if (state) target.searchParams.set('state', state);
+
+      set.status = 302;
+      set.headers.Location = target.toString();
       return {
         success: false,
-        error,
+        redirectTo: target.toString(),
       };
     }
 
     if (!code) {
-      set.status = 400;
+      const target = new URL('/login', dashboardUrl);
+      target.searchParams.set('error', 'missing_code');
+      if (state) target.searchParams.set('state', state);
+
+      set.status = 302;
+      set.headers.Location = target.toString();
       return {
         success: false,
-        error: 'Missing OAuth code',
+        redirectTo: target.toString(),
       };
     }
 
+    // TODO: exchange code for access token, create session, then redirect authenticated user
+    const target = new URL('/', dashboardUrl);
+    target.searchParams.set('oauth', 'discord_connected');
+    if (state) target.searchParams.set('state', state);
+
+    set.status = 302;
+    set.headers.Location = target.toString();
+
     return {
       success: true,
-      message: 'Discord OAuth callback received. Token exchange is next step.',
-      code,
-      state,
+      message: 'Discord OAuth callback received. Redirecting to dashboard.',
+      redirectTo: target.toString(),
     };
   });
