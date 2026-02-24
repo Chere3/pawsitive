@@ -77,7 +77,7 @@ export const authRouter = new Elysia({ prefix: '/auth' })
     }
 
     // TODO: exchange code for access token, create session, then redirect authenticated user
-    const target = new URL('/', dashboardUrl);
+    const target = new URL('/dashboard', dashboardUrl);
     target.searchParams.set('oauth', 'discord_connected');
     if (state) target.searchParams.set('state', state);
 

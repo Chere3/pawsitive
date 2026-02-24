@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Pawsitive — Dashboard" description="Control center for your Pawsitive Discord bot.">
+  <main class="dashboard">
+    <header class="topbar">
+      <a href="/" class="brand">🐾 Pawsitive</a>
+      <a href="/login" class="logout">Switch account</a>
+    </header>
+
+    <section class="hero">
+      <h1>Dashboard</h1>
+      <p>Welcome back. Your Discord OAuth handshake is complete.</p>
+    </section>
+
+    <section class="cards">
+      <article class="card">
+        <h3>Guilds Connected</h3>
+        <p>1</p>
+      </article>
+      <article class="card">
+        <h3>Bot Status</h3>
+        <p>Online ✅</p>
+      </article>
+      <article class="card">
+        <h3>Next Step</h3>
+        <p>Enable modules and configure permissions.</p>
+      </article>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .dashboard { max-width: 1000px; margin: 0 auto; padding: 24px 20px 64px; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px;
+    background: rgba(12,18,34,.72); backdrop-filter: blur(10px);
+  }
+  .brand { font-weight: 700; }
+  .logout { color: var(--ink-300); }
+  .hero { margin: 24px 0 18px; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); }
+  .hero p { color: var(--ink-300); margin-top: 8px; }
+  .cards { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .card {
+    border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+    background: rgba(255,255,255,.04);
+  }
+  .card h3 { font-size: 1rem; color: var(--ink-300); }
+  .card p { margin-top: 8px; font-weight: 600; }
+  @media (max-width: 800px) { .cards { grid-template-columns: 1fr; } }
+</style>
