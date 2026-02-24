@@ -217,6 +217,9 @@ Shared utilities and helpers.
 
 ### Planned Features (Roadmap)
 
+Full execution plan: see [ROADMAP.md](./ROADMAP.md).
+Contributor workflow and PR checklist: see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 🚧 **Image Processing**
 - Upload and process images
 - Filters and effects
