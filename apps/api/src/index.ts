@@ -17,8 +17,18 @@ const logger = createLogger({
 
 logger.info('🚀 Starting Pawsitive API...');
 
+const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:4321')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const app = new Elysia()
-  .use(cors())
+  .use(
+    cors({
+      origin: corsOrigins,
+      credentials: true,
+    })
+  )
   .decorate('logger', logger)
   .decorate('config', config)
   .decorate('startTime', Date.now())
