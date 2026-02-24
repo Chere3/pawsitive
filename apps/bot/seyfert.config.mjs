@@ -5,8 +5,7 @@ export default config.bot({
   intents: [
     "Guilds",
     "GuildMessages",
-    "MessageContent",
-    "GuildMembers"
+    "MessageContent"
   ],
   locations: {
     base: "src",
