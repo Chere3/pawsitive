@@ -44,7 +44,8 @@ pawsitive/
 1. **Clone the repository**
 
 ```bash
-cd /home/diego/Proyectos/pawsitive
+git clone https://github.com/Chere3/pawsitive.git
+cd pawsitive
 ```
 
 2. **Install dependencies**
