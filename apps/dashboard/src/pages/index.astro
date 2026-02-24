@@ -1,153 +1,151 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import StatusCard from '../components/StatusCard.astro';
-import FeatureCard from '../components/FeatureCard.astro';
+
+const inviteUrl =
+  import.meta.env.PUBLIC_BOT_INVITE_URL ??
+  'https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot%20applications.commands&permissions=274878024704';
+const supportUrl = import.meta.env.PUBLIC_SUPPORT_SERVER_URL ?? 'https://discord.gg/your-server';
 ---
 
-<Layout title="Pawsitive - Dashboard">
-  <main class="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="text-4xl">🐾</div>
-            <h1 class="text-3xl font-bold text-gray-900">Pawsitive</h1>
-          </div>
-          <nav class="hidden md:flex space-x-8">
-            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Dashboard</a>
-            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Commands</a>
-            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Settings</a>
-            <a href="#" class="text-gray-700 hover:text-primary-600 font-medium">Docs</a>
-          </nav>
+<Layout title="Pawsitive — Professional Furry Discord Bot">
+  <main class="page">
+    <header class="nav-shell">
+      <nav class="nav">
+        <a href="/" class="brand">🐾 Pawsitive</a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#workflow">Workflow</a>
+          <a href="/login" class="nav-login">Dashboard Login</a>
         </div>
-      </div>
+      </nav>
     </header>
 
-    <!-- Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <!-- Welcome Section -->
-      <section class="mb-12">
-        <h2 class="text-4xl font-bold text-gray-900 mb-4">
-          Welcome to Pawsitive! 🎉
-        </h2>
-        <p class="text-xl text-gray-600 max-w-3xl">
-          A professional furry-themed Discord bot platform with advanced image interactions,
-          moderation tools, and a beautiful dashboard.
-        </p>
-      </section>
-
-      <!-- Status Section -->
-      <section class="mb-12">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">Bot Status</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatusCard
-            title="Status"
-            value="Online"
-            icon="✅"
-            color="green"
-          />
-          <StatusCard
-            title="Guilds"
-            value="0"
-            icon="🏠"
-            color="blue"
-          />
-          <StatusCard
-            title="Users"
-            value="0"
-            icon="👥"
-            color="purple"
-          />
-          <StatusCard
-            title="Uptime"
-            value="0h 0m"
-            icon="⏱️"
-            color="indigo"
-          />
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section class="mb-12">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">Features</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard
-            title="Image Processing"
-            description="Advanced image manipulation and processing capabilities"
-            icon="🖼️"
-            status="In Development"
-          />
-          <FeatureCard
-            title="Moderation"
-            description="Comprehensive moderation tools for your server"
-            icon="🛡️"
-            status="Planned"
-          />
-          <FeatureCard
-            title="Fun Commands"
-            description="Engaging and entertaining commands for your community"
-            icon="🎮"
-            status="In Development"
-          />
-          <FeatureCard
-            title="Custom Reactions"
-            description="Create custom reactions and responses"
-            icon="⚡"
-            status="Planned"
-          />
-          <FeatureCard
-            title="Analytics"
-            description="Detailed analytics and insights about your server"
-            icon="📊"
-            status="Planned"
-          />
-          <FeatureCard
-            title="API Access"
-            description="Full API access for custom integrations"
-            icon="🔌"
-            status="Active"
-          />
-        </div>
-      </section>
-
-      <!-- Quick Actions -->
-      <section>
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <button class="btn-primary">
-              Invite Bot
-            </button>
-            <button class="btn-secondary">
-              View Commands
-            </button>
-            <button class="btn-secondary">
-              Support Server
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-white mt-20">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="text-center text-gray-600">
-          <p>Made with 💜 using Astro, Seyfert, and Elysia</p>
-          <p class="mt-2 text-sm">© 2026 Pawsitive. All rights reserved.</p>
-        </div>
+    <section class="hero">
+      <p class="eyebrow">PROFESSIONAL FURRY COMMUNITY PLATFORM</p>
+      <h1>Build a legendary Discord server experience with style, safety, and soul.</h1>
+      <p class="hero-copy">
+        Pawsitive combines expressive interaction systems, image-rich command experiences, and moderation intelligence
+        into one serious toolkit for furry communities.
+      </p>
+      <div class="cta-row">
+        <a href={inviteUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Invite Pawsitive</a>
+        <a href="/login" class="btn btn-glass">Open Dashboard</a>
       </div>
-    </footer>
+      <p class="meta">Powered by <strong>Seyfert</strong> · <strong>Elysia</strong> · <strong>Astro</strong></p>
+    </section>
+
+    <section id="features" class="panel-grid">
+      <article class="panel tall">
+        <h3>Advanced Image Interactions</h3>
+        <p>From profile cards to scene generation workflows, create visual interactions members actually remember.</p>
+        <span class="chip">Visual Engine</span>
+      </article>
+      <article class="panel">
+        <h3>Smart Moderation Suite</h3>
+        <p>Keep roleplay and social channels healthy with configurable guardrails and context-aware automations.</p>
+        <span class="chip">Safety Controls</span>
+      </article>
+      <article class="panel">
+        <h3>Guild Analytics</h3>
+        <p>Track behavior trends, command usage, and engagement pulses to improve community retention.</p>
+        <span class="chip">Insights</span>
+      </article>
+    </section>
+
+    <section id="workflow" class="workflow">
+      <h2>Launch in three clean moves</h2>
+      <div class="steps">
+        <div class="step"><strong>01</strong><span>Invite and authorize Pawsitive in your server.</span></div>
+        <div class="step"><strong>02</strong><span>Sign in with Discord and pick your guild.</span></div>
+        <div class="step"><strong>03</strong><span>Activate modules and tailor the vibe to your community.</span></div>
+      </div>
+      <a href={supportUrl} target="_blank" rel="noopener noreferrer" class="support-link">Need help? Join support server →</a>
+    </section>
   </main>
 </Layout>
 
 <style>
-  .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors;
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 72px;
   }
-  
-  .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors;
+
+  .nav-shell {
+    position: sticky;
+    top: 10px;
+    z-index: 20;
+    margin-bottom: 48px;
+  }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(12, 18, 34, 0.72);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 12px 16px;
+  }
+
+  .brand { font-weight: 700; }
+  .nav-links { display: flex; gap: 18px; color: var(--ink-300); }
+  .nav-login { color: var(--ink-100); }
+
+  .hero h1 { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.06; margin: 12px 0 20px; }
+  .hero-copy { max-width: 740px; color: var(--ink-300); font-size: 1.1rem; }
+  .eyebrow { color: var(--brand-2); font-weight: 600; letter-spacing: 0.08em; font-size: 0.82rem; }
+  .meta { margin-top: 16px; color: var(--ink-500); }
+
+  .cta-row { display: flex; gap: 12px; margin: 28px 0 4px; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: linear-gradient(130deg, var(--brand), var(--accent)); color: white; }
+  .btn-glass { background: rgba(255,255,255,.05); border-color: var(--line); }
+
+  .panel-grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 14px;
+  }
+  .panel {
+    grid-column: span 6;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .panel.tall { grid-column: span 12; }
+  .panel p { color: var(--ink-300); margin-top: 8px; }
+  .chip {
+    display: inline-block;
+    margin-top: 16px;
+    color: #09111f;
+    background: linear-gradient(120deg, var(--brand-2), #9df1df);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .workflow { margin-top: 48px; padding: 26px; border: 1px solid var(--line); border-radius: 16px; background: rgba(13, 19, 36, .65); }
+  .workflow h2 { margin-bottom: 14px; }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+  .step { background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 8px; }
+  .step strong { color: var(--brand-2); }
+  .support-link { display: inline-block; margin-top: 16px; color: var(--brand-2); }
+
+  @media (max-width: 820px) {
+    .nav-links { display: none; }
+    .panel, .panel.tall { grid-column: span 12; }
+    .steps { grid-template-columns: 1fr; }
   }
 </style>

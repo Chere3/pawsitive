@@ -1,0 +1,94 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const discordAuthUrl =
+  import.meta.env.PUBLIC_DISCORD_AUTH_URL ??
+  `${import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000'}/auth/discord`;
+---
+
+<Layout title="Pawsitive — Login" description="Sign in to Pawsitive Dashboard with Discord OAuth.">
+  <main class="login-page">
+    <a href="/" class="back">← Back to home</a>
+
+    <section class="login-card">
+      <p class="eyebrow">DASHBOARD ACCESS</p>
+      <h1>Sign in with Discord</h1>
+      <p class="copy">
+        Connect your Discord account to manage guild settings, modules, and community analytics from one place.
+      </p>
+
+      <a href={discordAuthUrl} class="discord-btn" rel="noopener noreferrer">
+        <span>🎮</span>
+        Continue with Discord
+      </a>
+
+      <ul class="meta-list">
+        <li>• We only request permissions needed to manage your server setup.</li>
+        <li>• Your token/session is handled by the API authentication layer.</li>
+        <li>• You can revoke access any time from Discord authorized apps.</li>
+      </ul>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .login-page {
+    min-height: 100vh;
+    display: grid;
+    place-content: center;
+    padding: 24px;
+    gap: 16px;
+  }
+
+  .back {
+    color: var(--ink-300);
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .login-card {
+    width: min(520px, 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.3);
+  }
+
+  .eyebrow {
+    color: var(--brand-2);
+    font-size: .8rem;
+    letter-spacing: .08em;
+    font-weight: 600;
+  }
+
+  h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 10px 0 12px; }
+  .copy { color: var(--ink-300); }
+
+  .discord-btn {
+    margin-top: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    border-radius: 12px;
+    padding: 14px;
+    background: linear-gradient(120deg, #5865f2, #7289ff);
+    color: white;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,.12);
+    transition: transform .2s ease;
+  }
+
+  .discord-btn:hover { transform: translateY(-1px); }
+
+  .meta-list {
+    list-style: none;
+    margin-top: 18px;
+    display: grid;
+    gap: 8px;
+    color: var(--ink-500);
+    font-size: .92rem;
+  }
+</style>

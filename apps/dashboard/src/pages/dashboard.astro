@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const apiBase = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
+---
+
+<Layout title="Pawsitive — Dashboard" description="Control center for your Pawsitive Discord bot.">
+  <main class="dashboard">
+    <header class="topbar">
+      <a href="/" class="brand">🐾 Pawsitive</a>
+      <button class="logout" id="logoutBtn" type="button">Logout</button>
+    </header>
+
+    <section class="hero">
+      <div class="profile" id="profile">
+        <img id="avatar" class="avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Discord avatar" />
+        <div>
+          <h1 id="displayName">Dashboard</h1>
+          <p id="welcomeText">Loading your Discord profile…</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards">
+      <article class="card">
+        <h3>Session</h3>
+        <p id="sessionStatus">Checking…</p>
+      </article>
+      <article class="card">
+        <h3>Bot Status</h3>
+        <p>Online ✅</p>
+      </article>
+      <article class="card">
+        <h3>Next Step</h3>
+        <p>Enable modules and configure permissions.</p>
+      </article>
+    </section>
+  </main>
+
+  <script is:inline define:vars={{ apiBase }}>
+    const avatar = document.getElementById('avatar');
+    const displayName = document.getElementById('displayName');
+    const welcomeText = document.getElementById('welcomeText');
+    const sessionStatus = document.getElementById('sessionStatus');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(`${apiBase}/auth/me`, {
+          credentials: 'include',
+        });
+
+        if (!res.ok) {
+          throw new Error('not_authenticated');
+        }
+
+        const data = await res.json();
+        const user = data.user;
+
+        avatar.src = user.avatarUrl;
+        displayName.textContent = user.displayName;
+        welcomeText.textContent = `Signed in as @${user.username}`;
+        sessionStatus.textContent = 'Authenticated (persistent session active)';
+      } catch {
+        sessionStatus.textContent = 'Not authenticated';
+        welcomeText.textContent = 'Session missing. Please sign in again.';
+        setTimeout(() => {
+          window.location.href = '/login?error=session_missing';
+        }, 800);
+      }
+    }
+
+    logoutBtn?.addEventListener('click', async () => {
+      await fetch(`${apiBase}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      window.location.href = '/login';
+    });
+
+    loadProfile();
+  </script>
+</Layout>
+
+<style>
+  .dashboard { max-width: 1000px; margin: 0 auto; padding: 24px 20px 64px; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px;
+    background: rgba(12,18,34,.72); backdrop-filter: blur(10px);
+  }
+  .brand { font-weight: 700; }
+  .logout { color: var(--ink-300); background: transparent; border: 0; cursor: pointer; }
+  .hero { margin: 24px 0 18px; }
+  .profile { display: flex; gap: 14px; align-items: center; }
+  .avatar { width: 72px; height: 72px; border-radius: 999px; border: 2px solid var(--line); }
+  .hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); }
+  .hero p { color: var(--ink-300); margin-top: 8px; }
+  .cards { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .card {
+    border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+    background: rgba(255,255,255,.04);
+  }
+  .card h3 { font-size: 1rem; color: var(--ink-300); }
+  .card p { margin-top: 8px; font-weight: 600; }
+  @media (max-width: 800px) { .cards { grid-template-columns: 1fr; } }
+</style>
