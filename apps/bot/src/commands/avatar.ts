@@ -5,7 +5,7 @@ import {
   createUserOption,
   type CommandContext,
 } from 'seyfert';
-import { Embed } from 'seyfert/lib/builders';
+import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 const options = {
   user: createUserOption({
@@ -26,9 +26,7 @@ export default class AvatarCommand extends Command {
       target.avatarURL?.({ extension: 'png', size: 4096 }) ??
       `https://cdn.discordapp.com/embed/avatars/${Number(target.id) % 5}.png`;
 
-    const embed = new Embed()
-      .setTitle(`🖼️ Avatar — ${target.username}`)
-      .setColor(0xff6bbb)
+    const embed = createPawsitiveEmbed(`Avatar — ${target.username}`, 'accent')
       .setImage(avatarUrl)
       .setDescription([`[Open original](${avatarUrl})`, '', '> **Uso:** `/avatar [user]`'].join('\n'))
       .setFooter({ text: 'Pawsitive • Avatar Lookup' });

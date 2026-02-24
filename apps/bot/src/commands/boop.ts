@@ -5,7 +5,7 @@ import {
   createUserOption,
   type CommandContext,
 } from 'seyfert';
-import { Embed } from 'seyfert/lib/builders';
+import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 const options = {
   user: createUserOption({
@@ -32,18 +32,14 @@ export default class BoopCommand extends Command {
     const target = ctx.options.user;
 
     if (target.id === actor.id) {
-      const embed = new Embed()
-        .setTitle('🐾 Self boop')
-        .setColor(0xff6bbb)
+      const embed = createPawsitiveEmbed('Self boop', 'accent')
         .setDescription(['Self-boop unlocked. Cute and valid.', '', '> **Uso:** `/boop user:@someone`'].join('\n'));
       await ctx.write({ embeds: [embed] });
       return;
     }
 
     const action = lines[Math.floor(Math.random() * lines.length)];
-    const embed = new Embed()
-      .setTitle('🐾 Boop Delivered')
-      .setColor(0xff6bbb)
+    const embed = createPawsitiveEmbed('Boop Delivered', 'accent')
       .setDescription([`**${actor.username}** ${action} **${target.username}**`, '', '> **Uso:** `/boop user:@someone`'].join('\n'));
 
     await ctx.write({ embeds: [embed] });

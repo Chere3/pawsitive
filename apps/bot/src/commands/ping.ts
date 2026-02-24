@@ -5,8 +5,8 @@ import {
   createBooleanOption,
   type CommandContext 
 } from 'seyfert';
-import { Embed } from 'seyfert/lib/builders';
 import { MessageFlags } from 'seyfert/lib/types';
+import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 const options = {
   hide: createBooleanOption({
@@ -29,9 +29,7 @@ export default class PingCommand extends Command {
     
     const roundTrip = Date.now() - start;
 
-    const embed = new Embed()
-      .setTitle('🏓 Pawsitive • Ping')
-      .setColor(0x5865f2)
+    const embed = createPawsitiveEmbed('Ping', 'primary')
       .setDescription([
         `⚡ Gateway: \`${gatewayLatency}ms\``,
         `🔄 Round-trip: \`${roundTrip}ms\``,

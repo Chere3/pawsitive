@@ -1,5 +1,6 @@
-import { ActionRow, Button, Embed, createEvent } from 'seyfert';
+import { ActionRow, Button, createEvent } from 'seyfert';
 import { ButtonStyle } from 'seyfert/lib/types';
+import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 const PREFIX = process.env.BOT_PREFIX ?? '!';
 const DASHBOARD_URL = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
@@ -39,9 +40,7 @@ export default createEvent({
     switch (command) {
       case 'ping': {
         const gatewayLatency = client.gateway.latency;
-        const embed = new Embed()
-          .setTitle('🏓 Pawsitive • Ping')
-          .setColor(0x5865f2)
+        const embed = createPawsitiveEmbed('Ping', 'primary')
           .setDescription([
             `⚡ Gateway: \`${gatewayLatency}ms\``,
             `📊 Uptime: \`${formatUptime(process.uptime())}\``,
@@ -53,10 +52,8 @@ export default createEvent({
       }
 
       case 'info': {
-        const embed = new Embed()
-          .setTitle('🐾 Pawsitive Bot')
+        const embed = createPawsitiveEmbed('Pawsitive Bot', 'primary')
           .setDescription(['Professional furry-themed Discord bot platform.', '', `> **Uso:** \`${PREFIX}info\``].join('\n'))
-          .setColor(0x5865f2)
           .addFields([
             {
               name: 'Stats',
@@ -92,9 +89,7 @@ export default createEvent({
           target.avatarURL?.({ extension: 'png', size: 4096 }) ??
           `https://cdn.discordapp.com/embed/avatars/${Number(target.id) % 5}.png`;
 
-        const embed = new Embed()
-          .setTitle(`🖼️ Avatar — ${target.username}`)
-          .setColor(0xff6bbb)
+        const embed = createPawsitiveEmbed(`Avatar — ${target.username}`, 'accent')
           .setImage(avatarUrl)
           .setDescription([`[Open original](${avatarUrl})`, '', `> **Uso:** \`${PREFIX}avatar [@user]\``].join('\n'));
 
@@ -104,9 +99,7 @@ export default createEvent({
 
       case 'server': {
         if (!message.guildId) {
-          const embed = new Embed()
-            .setTitle('⚠️ Command unavailable')
-            .setColor(0xed4245)
+          const embed = createPawsitiveEmbed('Command unavailable', 'danger')
             .setDescription(['This command only works inside a server 🐾', '', `> **Uso:** \`${PREFIX}server\``].join('\n'));
           await message.reply({ embeds: [embed] });
           return;
@@ -114,9 +107,7 @@ export default createEvent({
 
         const guild = await message.guild('flow');
 
-        const embed = new Embed()
-          .setTitle('🏠 Server Snapshot')
-          .setColor(0x43d9bd)
+        const embed = createPawsitiveEmbed('Server Snapshot', 'success')
           .addFields([
             { name: 'Guild ID', value: `\`${message.guildId}\``, inline: true },
             { name: 'Name', value: `${guild?.name ?? 'Unknown'}`, inline: true },
@@ -131,9 +122,7 @@ export default createEvent({
       case 'boop': {
         const firstMention = message.mentions?.users?.[0];
         if (!firstMention) {
-          const embed = new Embed()
-            .setTitle('⚠️ Missing argument')
-            .setColor(0xed4245)
+          const embed = createPawsitiveEmbed('Missing argument', 'danger')
             .setDescription([`You need to mention a target user.`, '', `> **Uso:** \`${PREFIX}boop @user\``].join('\n'));
           await message.reply({ embeds: [embed] });
           return;
@@ -141,9 +130,7 @@ export default createEvent({
 
         const target = toUser(firstMention);
         if (target.id === message.author.id) {
-          const embed = new Embed()
-            .setTitle('🐾 Self boop')
-            .setColor(0xff6bbb)
+          const embed = createPawsitiveEmbed('Self boop', 'accent')
             .setDescription(['Self-boop unlocked. Cute and valid.', '', `> **Uso:** \`${PREFIX}boop @user\``].join('\n'));
           await message.reply({ embeds: [embed] });
           return;
@@ -156,9 +143,7 @@ export default createEvent({
           'boops and runs away dramatically 💨',
         ];
         const action = lines[Math.floor(Math.random() * lines.length)];
-        const embed = new Embed()
-          .setTitle('🐾 Boop Delivered')
-          .setColor(0xff6bbb)
+        const embed = createPawsitiveEmbed('Boop Delivered', 'accent')
           .setDescription([
             `**${message.author.username}** ${action} **${target.username}**`,
             '',
@@ -170,9 +155,7 @@ export default createEvent({
       }
 
       case 'help': {
-        const embed = new Embed()
-          .setTitle('📘 Pawsitive Help')
-          .setColor(0x7f6cff)
+        const embed = createPawsitiveEmbed('Help Center', 'primary')
           .setDescription([
             `• \`${PREFIX}ping\``,
             `• \`${PREFIX}info\``,

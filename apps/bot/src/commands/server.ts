@@ -1,5 +1,5 @@
 import { Command, Declare, type CommandContext } from 'seyfert';
-import { Embed } from 'seyfert/lib/builders';
+import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 @Declare({
   name: 'server',
@@ -10,17 +10,13 @@ export default class ServerCommand extends Command {
     const guild = ctx.interaction.guild;
 
     if (!guild) {
-      const embed = new Embed()
-        .setTitle('⚠️ Command unavailable')
-        .setColor(0xed4245)
+      const embed = createPawsitiveEmbed('Command unavailable', 'danger')
         .setDescription(['This command only works inside a server 🐾', '', '> **Uso:** `/server`'].join('\n'));
       await ctx.write({ embeds: [embed] });
       return;
     }
 
-    const embed = new Embed()
-      .setTitle('🏠 Server Snapshot')
-      .setColor(0x43d9bd)
+    const embed = createPawsitiveEmbed('Server Snapshot', 'success')
       .addFields([
         { name: 'Guild ID', value: `\`${guild.id}\``, inline: true },
         { name: 'Locale', value: `${guild.locale ?? 'N/A'}`, inline: true },
