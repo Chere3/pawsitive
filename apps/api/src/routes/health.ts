@@ -8,7 +8,7 @@ export const healthRouter = new Elysia({ prefix: '/health' })
     '/',
     () => {
       const uptime = Math.floor((Date.now() - START_TIME) / 1000);
-      
+
       return {
         status: 'healthy',
         timestamp: new Date().toISOString(),
@@ -41,11 +41,10 @@ export const healthRouter = new Elysia({ prefix: '/health' })
   .get(
     '/ready',
     ({ set }) => {
-      // TODO: Add actual readiness checks (database, external services, etc.)
       const ready = true;
-      
+
       set.status = ready ? 200 : 503;
-      
+
       return {
         ready,
         timestamp: new Date().toISOString(),

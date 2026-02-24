@@ -9,13 +9,14 @@
   ],
   "scripts": {
     "dev": "bash -lc 'bun run bot:dev & bun run api:dev & bun run dashboard:dev; wait'",
-    "build": "bash -lc 'for d in packages/config packages/types packages/shared apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run build) || exit 1; done'",
-    "lint": "bash -lc 'for d in packages/config packages/types packages/shared apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run lint) || exit 1; done'",
-    "typecheck": "bash -lc 'for d in packages/config packages/types packages/shared apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run typecheck) || exit 1; done'",
-    "clean": "bash -lc 'for d in packages/config packages/types packages/shared apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run clean) || exit 1; done'",
+    "build": "bash -lc 'for d in packages/config packages/types packages/shared packages/db apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run build) || exit 1; done'",
+    "lint": "bash -lc 'for d in packages/config packages/types packages/shared packages/db apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run lint) || exit 1; done'",
+    "typecheck": "bash -lc 'for d in packages/config packages/types packages/shared packages/db apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run typecheck) || exit 1; done'",
+    "clean": "bash -lc 'for d in packages/config packages/types packages/shared packages/db apps/bot apps/api apps/dashboard; do echo \"==> $d\"; (cd $d && bun run clean) || exit 1; done'",
     "bot:dev": "cd apps/bot && bun run dev",
     "api:dev": "cd apps/api && bun run dev",
-    "dashboard:dev": "cd apps/dashboard && bun run dev"
+    "dashboard:dev": "cd apps/dashboard && bun run dev",
+    "db:migrate": "cd packages/db && bun run db:migrate"
   },
   "keywords": [
     "discord",
