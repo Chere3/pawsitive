@@ -5,6 +5,7 @@ import {
   createBooleanOption,
   type CommandContext 
 } from 'seyfert';
+import { Embed } from 'seyfert/lib/builders';
 import { MessageFlags } from 'seyfert/lib/types';
 
 const options = {
@@ -26,24 +27,21 @@ export default class PingCommand extends Command {
     // Get gateway latency
     const gatewayLatency = ctx.client.gateway.latency;
     
-    // Send initial response
-    await ctx.write({
-      content: '🏓 Pinging...',
-      flags,
-    });
-    
-    // Calculate round-trip latency
     const roundTrip = Date.now() - start;
-    
-    // Edit with full stats
-    await ctx.editOrReply({
-      content: [
-        '🏓 **Pong!**',
-        '',
+
+    const embed = new Embed()
+      .setTitle('🏓 Pawsitive • Ping')
+      .setColor(0x5865f2)
+      .setDescription([
         `⚡ Gateway: \`${gatewayLatency}ms\``,
         `🔄 Round-trip: \`${roundTrip}ms\``,
         `📊 Uptime: \`${formatUptime(process.uptime())}\``,
-      ].join('\n'),
+        '',
+        '> **Uso:** `/ping [hide:true|false]`',
+      ].join('\n'));
+
+    await ctx.write({
+      embeds: [embed],
       flags,
     });
   }

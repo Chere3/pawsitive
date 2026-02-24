@@ -46,7 +46,8 @@ export default class InfoCommand extends Command {
         },
       ])
       .setFooter({ text: 'Made with 💜 and Seyfert' })
-      .setTimestamp();
+      .setTimestamp()
+      .addFields([{ name: 'Usage', value: '> **Uso:** `/info`', inline: false }]);
 
     const actions = new ActionRow<Button>().addComponents(
       new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(dashboardUrl),

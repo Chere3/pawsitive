@@ -39,20 +39,23 @@ export default createEvent({
     switch (command) {
       case 'ping': {
         const gatewayLatency = client.gateway.latency;
-        await message.reply({
-          content: [
-            '🏓 **Pong!**',
+        const embed = new Embed()
+          .setTitle('🏓 Pawsitive • Ping')
+          .setColor(0x5865f2)
+          .setDescription([
             `⚡ Gateway: \`${gatewayLatency}ms\``,
             `📊 Uptime: \`${formatUptime(process.uptime())}\``,
-          ].join('\n'),
-        });
+            '',
+            `> **Uso:** \`${PREFIX}ping\``,
+          ].join('\n'));
+        await message.reply({ embeds: [embed] });
         break;
       }
 
       case 'info': {
         const embed = new Embed()
           .setTitle('🐾 Pawsitive Bot')
-          .setDescription('Professional furry-themed Discord bot platform.')
+          .setDescription(['Professional furry-themed Discord bot platform.', '', `> **Uso:** \`${PREFIX}info\``].join('\n'))
           .setColor(0x5865f2)
           .addFields([
             {
@@ -93,7 +96,7 @@ export default createEvent({
           .setTitle(`🖼️ Avatar — ${target.username}`)
           .setColor(0xff6bbb)
           .setImage(avatarUrl)
-          .setDescription(`[Open original](${avatarUrl})`);
+          .setDescription([`[Open original](${avatarUrl})`, '', `> **Uso:** \`${PREFIX}avatar [@user]\``].join('\n'));
 
         await message.reply({ embeds: [embed] });
         break;
@@ -101,7 +104,11 @@ export default createEvent({
 
       case 'server': {
         if (!message.guildId) {
-          await message.reply({ content: 'This command only works inside a server 🐾' });
+          const embed = new Embed()
+            .setTitle('⚠️ Command unavailable')
+            .setColor(0xed4245)
+            .setDescription(['This command only works inside a server 🐾', '', `> **Uso:** \`${PREFIX}server\``].join('\n'));
+          await message.reply({ embeds: [embed] });
           return;
         }
 
@@ -114,7 +121,8 @@ export default createEvent({
             { name: 'Guild ID', value: `\`${message.guildId}\``, inline: true },
             { name: 'Name', value: `${guild?.name ?? 'Unknown'}`, inline: true },
             { name: 'Features', value: `${guild?.features?.length ?? 0}`, inline: true },
-          ]);
+          ])
+          .setDescription(`> **Uso:** \`${PREFIX}server\``);
 
         await message.reply({ embeds: [embed] });
         break;
@@ -123,13 +131,21 @@ export default createEvent({
       case 'boop': {
         const firstMention = message.mentions?.users?.[0];
         if (!firstMention) {
-          await message.reply({ content: `Usage: \`${PREFIX}boop @user\`` });
+          const embed = new Embed()
+            .setTitle('⚠️ Missing argument')
+            .setColor(0xed4245)
+            .setDescription([`You need to mention a target user.`, '', `> **Uso:** \`${PREFIX}boop @user\``].join('\n'));
+          await message.reply({ embeds: [embed] });
           return;
         }
 
         const target = toUser(firstMention);
         if (target.id === message.author.id) {
-          await message.reply({ content: 'Self-boop unlocked. Cute and valid. 🐾' });
+          const embed = new Embed()
+            .setTitle('🐾 Self boop')
+            .setColor(0xff6bbb)
+            .setDescription(['Self-boop unlocked. Cute and valid.', '', `> **Uso:** \`${PREFIX}boop @user\``].join('\n'));
+          await message.reply({ embeds: [embed] });
           return;
         }
 
@@ -140,9 +156,16 @@ export default createEvent({
           'boops and runs away dramatically 💨',
         ];
         const action = lines[Math.floor(Math.random() * lines.length)];
-        await message.reply({
-          content: `**${message.author.username}** ${action} **${target.username}**`,
-        });
+        const embed = new Embed()
+          .setTitle('🐾 Boop Delivered')
+          .setColor(0xff6bbb)
+          .setDescription([
+            `**${message.author.username}** ${action} **${target.username}**`,
+            '',
+            `> **Uso:** \`${PREFIX}boop @user\``,
+          ].join('\n'));
+
+        await message.reply({ embeds: [embed] });
         break;
       }
 
@@ -151,13 +174,13 @@ export default createEvent({
           .setTitle('📘 Pawsitive Help')
           .setColor(0x7f6cff)
           .setDescription([
-            `Prefix: \`${PREFIX}\``,
-            '',
             `• \`${PREFIX}ping\``,
             `• \`${PREFIX}info\``,
             `• \`${PREFIX}avatar [@user]\``,
             `• \`${PREFIX}server\``,
             `• \`${PREFIX}boop @user\``,
+            '',
+            `> **Uso:** \`${PREFIX}<comando> [args]\``,
           ].join('\n'));
 
         const actions = new ActionRow<Button>().addComponents(

@@ -30,7 +30,7 @@ export default class AvatarCommand extends Command {
       .setTitle(`🖼️ Avatar — ${target.username}`)
       .setColor(0xff6bbb)
       .setImage(avatarUrl)
-      .setDescription(`[Open original](${avatarUrl})`)
+      .setDescription([`[Open original](${avatarUrl})`, '', '> **Uso:** `/avatar [user]`'].join('\n'))
       .setFooter({ text: 'Pawsitive • Avatar Lookup' });
 
     await ctx.write({ embeds: [embed] });
