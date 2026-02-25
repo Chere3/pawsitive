@@ -1,6 +1,6 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
-import { eightBallAnswers, randomItem, textTailFromMessage } from '../lib/fun-tools.js';
+import { eightBallAnswers, randomItem, resolveStringInput } from '../lib/fun-tools.js';
 
 const options = {
   question: createStringOption({
@@ -17,10 +17,7 @@ const options = {
 @Options(options)
 export default class EightBallCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const message = (ctx as unknown as { message?: { content?: string } }).message;
-    const question =
-      ctx.options.question ??
-      textTailFromMessage(message?.content, ctx.fullCommandName, process.env.BOT_PREFIX ?? '!');
+    const question = resolveStringInput(ctx, 'question', process.env.BOT_PREFIX ?? '!');
 
     if (!question) {
       await ctx.write({

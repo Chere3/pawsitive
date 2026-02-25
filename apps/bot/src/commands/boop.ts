@@ -1,6 +1,6 @@
 import { Command, type CommandContext, createUserOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
-import { boopLines, randomItem } from '../lib/fun-tools.js';
+import { boopLines, getTextMentions, randomItem } from '../lib/fun-tools.js';
 
 const options = {
   user: createUserOption({
@@ -16,11 +16,8 @@ const options = {
 @Options(options)
 export default class BoopCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const actor = ctx.interaction.user;
-    const message = (
-      ctx as unknown as { message?: { mentions?: { id: string; username: string }[] } }
-    ).message;
-    const target = ctx.options.user ?? message?.mentions?.[0];
+    const actor = ctx.author;
+    const target = ctx.options.user ?? getTextMentions(ctx)[0];
 
     if (!target) {
       await ctx.write({

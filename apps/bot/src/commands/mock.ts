@@ -1,6 +1,6 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
-import { mockCase, textTailFromMessage } from '../lib/fun-tools.js';
+import { mockCase, resolveStringInput } from '../lib/fun-tools.js';
 
 const options = {
   text: createStringOption({
@@ -17,10 +17,7 @@ const options = {
 @Options(options)
 export default class MockCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const message = (ctx as unknown as { message?: { content?: string } }).message;
-    const input =
-      ctx.options.text ??
-      textTailFromMessage(message?.content, ctx.fullCommandName, process.env.BOT_PREFIX ?? '!');
+    const input = resolveStringInput(ctx, 'text', process.env.BOT_PREFIX ?? '!');
 
     if (!input) {
       await ctx.write({

@@ -1,6 +1,6 @@
 import { Command, type CommandContext, createUserOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
-import { shipVerdict } from '../lib/fun-tools.js';
+import { getTextMentions, shipVerdict } from '../lib/fun-tools.js';
 
 const options = {
   user1: createUserOption({
@@ -20,12 +20,9 @@ const options = {
 @Options(options)
 export default class ShipCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const message = (
-      ctx as unknown as { message?: { mentions?: { id: string; username: string }[] } }
-    ).message;
-    const mentionUsers = message?.mentions ?? [];
-    const user1 = ctx.options.user1 ?? mentionUsers[0];
-    const user2 = ctx.options.user2 ?? mentionUsers[1];
+    const mentions = getTextMentions(ctx);
+    const user1 = ctx.options.user1 ?? mentions[0];
+    const user2 = ctx.options.user2 ?? mentions[1];
 
     if (!user1 || !user2) {
       await ctx.write({

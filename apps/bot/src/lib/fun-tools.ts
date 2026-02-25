@@ -73,7 +73,7 @@ export function textTailFromMessage(
   fullCommandName: string,
   prefix = '!',
 ): string {
-  if (!content) return '';
+  if (!content || !fullCommandName) return '';
 
   const normalized = content.trim();
   const head = `${prefix}${fullCommandName}`.toLowerCase();
@@ -81,4 +81,39 @@ export function textTailFromMessage(
   if (!normalized.toLowerCase().startsWith(head)) return '';
 
   return normalized.slice(head.length).trim();
+}
+
+type TextMessageShape = {
+  content?: string;
+  mentions?: Array<{ id: string; username: string }>;
+};
+
+type TextCtxShape = {
+  message?: TextMessageShape;
+  fullCommandName?: string;
+  options?: Record<string, unknown>;
+};
+
+export function getTextMessage(ctx: unknown): TextMessageShape | undefined {
+  return (ctx as TextCtxShape).message;
+}
+
+export function getTextMentions(ctx: unknown): Array<{ id: string; username: string }> {
+  return getTextMessage(ctx)?.mentions ?? [];
+}
+
+export function resolveStringInput(
+  ctx: unknown,
+  optionName: string,
+  prefix = '!',
+): string | undefined {
+  const typed = ctx as TextCtxShape;
+  const direct = typed.options?.[optionName];
+
+  if (typeof direct === 'string' && direct.trim().length > 0) {
+    return direct.trim();
+  }
+
+  const tail = textTailFromMessage(typed.message?.content, typed.fullCommandName ?? '', prefix);
+  return tail || undefined;
 }
