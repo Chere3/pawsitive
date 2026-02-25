@@ -1,5 +1,6 @@
 import { Elysia } from 'elysia';
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { isSupabaseConfigured, supabaseRequest } from '../lib/supabase.js';
 
 type DiscordUser = {
   id: string;
@@ -17,7 +18,13 @@ type SessionPayload = {
 };
 
 const SESSION_COOKIE = 'pawsitive_session';
-const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+const OAUTH_STATE_COOKIE = 'pawsitive_oauth_state';
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
+const OAUTH_STATE_TTL_SECONDS = 60 * 10;
+
+function isProduction() {
+  return process.env.NODE_ENV === 'production';
+}
 
 function getDiscordOAuthConfig() {
   const clientId = process.env.DISCORD_CLIENT_ID;
@@ -30,7 +37,13 @@ function getDiscordOAuthConfig() {
 }
 
 function getSessionSecret() {
-  return process.env.API_SECRET || 'pawsitive-dev-session-secret-change-me';
+  const secret = process.env.API_SECRET;
+
+  if (!secret && isProduction()) {
+    throw new Error('API_SECRET is required in production. Refusing to run with insecure fallback secret.');
+  }
+
+  return secret || 'pawsitive-dev-session-secret-change-me';
 }
 
 function b64url(input: string) {
@@ -47,13 +60,13 @@ function unb64url(input: string) {
   return Buffer.from(normalized + pad, 'base64').toString('utf8');
 }
 
-function signSession(payload: SessionPayload) {
+function signToken(payload: object) {
   const encoded = b64url(JSON.stringify(payload));
   const signature = createHmac('sha256', getSessionSecret()).update(encoded).digest('base64url');
   return `${encoded}.${signature}`;
 }
 
-function verifySession(token?: string): SessionPayload | null {
+function verifyToken<T>(token?: string): T | null {
   if (!token || !token.includes('.')) return null;
 
   const [encoded, signature] = token.split('.', 2);
@@ -65,10 +78,37 @@ function verifySession(token?: string): SessionPayload | null {
   const expBuf = Buffer.from(expected);
   if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) return null;
 
-  const payload = JSON.parse(unb64url(encoded)) as SessionPayload;
-  if (!payload.exp || Date.now() > payload.exp) return null;
+  return JSON.parse(unb64url(encoded)) as T;
+}
 
+function signSession(payload: SessionPayload) {
+  return signToken(payload);
+}
+
+function verifySession(token?: string): SessionPayload | null {
+  const payload = verifyToken<SessionPayload>(token);
+  if (!payload?.exp || Date.now() > payload.exp) return null;
   return payload;
+}
+
+type OAuthStatePayload = {
+  state: string;
+  exp: number;
+};
+
+function createOAuthStateCookieValue(state: string) {
+  const payload: OAuthStatePayload = {
+    state,
+    exp: Date.now() + OAUTH_STATE_TTL_SECONDS * 1000,
+  };
+
+  return signToken(payload);
+}
+
+function verifyOAuthStateCookie(token?: string) {
+  const payload = verifyToken<OAuthStatePayload>(token);
+  if (!payload?.state || !payload?.exp || Date.now() > payload.exp) return null;
+  return payload.state;
 }
 
 function parseCookieHeader(cookieHeader?: string) {
@@ -85,9 +125,39 @@ function parseCookieHeader(cookieHeader?: string) {
   );
 }
 
+function buildCookie(name: string, value: string, maxAgeSeconds: number) {
+  const parts = [
+    `${name}=${encodeURIComponent(value)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${maxAgeSeconds}`,
+  ];
+
+  if (isProduction()) {
+    parts.push('Secure');
+  }
+
+  return parts.join('; ');
+}
+
+function clearCookie(name: string) {
+  const parts = [`${name}=`, 'Path=/', 'HttpOnly', 'SameSite=Lax', 'Max-Age=0'];
+
+  if (isProduction()) {
+    parts.push('Secure');
+  }
+
+  return parts.join('; ');
+}
+
 function buildAvatarUrl(user: DiscordUser) {
   if (!user.avatar) return `https://cdn.discordapp.com/embed/avatars/${Number(user.id) % 5}.png`;
   return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`;
+}
+
+function hashToken(token: string) {
+  return createHash('sha256').update(token).digest('hex');
 }
 
 async function exchangeCodeForToken(code: string, cfg: ReturnType<typeof getDiscordOAuthConfig>) {
@@ -110,7 +180,7 @@ async function exchangeCodeForToken(code: string, cfg: ReturnType<typeof getDisc
     throw new Error(`Failed token exchange (${response.status}): ${details}`);
   }
 
-  const tokenData = await response.json() as { access_token: string };
+  const tokenData = (await response.json()) as { access_token: string };
   return tokenData.access_token;
 }
 
@@ -126,7 +196,93 @@ async function fetchDiscordUser(accessToken: string) {
     throw new Error(`Failed user profile fetch (${response.status}): ${details}`);
   }
 
-  return await response.json() as DiscordUser;
+  return (await response.json()) as DiscordUser;
+}
+
+async function persistSupabaseSession(sessionToken: string, user: DiscordUser) {
+  if (!isSupabaseConfigured) return;
+
+  const now = new Date();
+  const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000).toISOString();
+
+  const userRecord = {
+    id: user.id,
+    discord_id: user.id,
+    username: user.username,
+    display_name: user.global_name ?? null,
+    avatar_hash: user.avatar ?? null,
+    updated_at: now.toISOString(),
+  };
+
+  const userUpsert = await supabaseRequest('users', {
+    method: 'POST',
+    query: { on_conflict: 'discord_id' },
+    body: userRecord,
+  });
+
+  if (userUpsert.error && !userUpsert.error.includes('duplicate')) {
+    throw new Error(`Supabase user upsert failed: ${userUpsert.error}`);
+  }
+
+  const sessionInsert = await supabaseRequest('sessions', {
+    method: 'POST',
+    body: {
+      id: randomUUID(),
+      user_id: user.id,
+      token_hash: hashToken(sessionToken),
+      expires_at: expiresAt,
+      created_at: now.toISOString(),
+    },
+  });
+
+  if (sessionInsert.error) {
+    throw new Error(`Supabase session insert failed: ${sessionInsert.error}`);
+  }
+}
+
+async function findSupabaseSession(sessionToken: string) {
+  if (!isSupabaseConfigured) return null;
+
+  const sessionLookup = await supabaseRequest<{ user_id: string; expires_at: string; revoked_at: string | null }>('sessions', {
+    query: {
+      token_hash: `eq.${hashToken(sessionToken)}`,
+      revoked_at: 'is.null',
+      select: 'user_id,expires_at,revoked_at',
+      limit: '1',
+    },
+    single: true,
+  });
+
+  if (sessionLookup.error || !sessionLookup.data) return null;
+  if (new Date(sessionLookup.data.expires_at).getTime() <= Date.now()) return null;
+
+  const userLookup = await supabaseRequest<{ id: string; username: string; display_name: string | null; avatar_hash: string | null }>('users', {
+    query: {
+      id: `eq.${sessionLookup.data.user_id}`,
+      select: 'id,username,display_name,avatar_hash',
+      limit: '1',
+    },
+    single: true,
+  });
+
+  if (userLookup.error || !userLookup.data) return null;
+
+  return {
+    id: userLookup.data.id,
+    username: userLookup.data.username,
+    displayName: userLookup.data.display_name ?? userLookup.data.username,
+    avatarHash: userLookup.data.avatar_hash ?? null,
+  };
+}
+
+async function removeSupabaseSession(sessionToken: string) {
+  if (!isSupabaseConfigured) return;
+
+  await supabaseRequest('sessions', {
+    method: 'PATCH',
+    query: { token_hash: `eq.${hashToken(sessionToken)}` },
+    body: { revoked_at: new Date().toISOString() },
+  });
 }
 
 export const authRouter = new Elysia({ prefix: '/auth' })
@@ -138,7 +294,7 @@ export const authRouter = new Elysia({ prefix: '/auth' })
       return { success: false, error: 'DISCORD_CLIENT_ID is not configured.' };
     }
 
-    const state = typeof query.state === 'string' ? query.state : crypto.randomUUID();
+    const state = typeof query.state === 'string' ? query.state : randomBytes(16).toString('hex');
 
     const discordUrl = new URL('https://discord.com/api/oauth2/authorize');
     discordUrl.searchParams.set('client_id', cfg.clientId);
@@ -148,17 +304,22 @@ export const authRouter = new Elysia({ prefix: '/auth' })
     discordUrl.searchParams.set('prompt', 'consent');
     discordUrl.searchParams.set('state', state);
 
+    set.headers['Set-Cookie'] = buildCookie(OAUTH_STATE_COOKIE, createOAuthStateCookieValue(state), OAUTH_STATE_TTL_SECONDS);
     set.status = 302;
     set.headers.Location = discordUrl.toString();
 
     return { success: true, redirectTo: discordUrl.toString() };
   })
-  .get('/discord/callback', async ({ query, set }) => {
+  .get('/discord/callback', async ({ query, request, set }) => {
     const cfg = getDiscordOAuthConfig();
 
     const code = typeof query.code === 'string' ? query.code : undefined;
     const state = typeof query.state === 'string' ? query.state : undefined;
     const error = typeof query.error === 'string' ? query.error : undefined;
+
+    const cookies = parseCookieHeader(request.headers.get('cookie') ?? undefined);
+    const stateCookie = cookies[OAUTH_STATE_COOKIE];
+    const stateFromCookie = verifyOAuthStateCookie(stateCookie);
 
     const toLogin = new URL('/login', cfg.dashboardUrl);
     const toDashboard = new URL('/dashboard', cfg.dashboardUrl);
@@ -167,6 +328,15 @@ export const authRouter = new Elysia({ prefix: '/auth' })
       toLogin.searchParams.set('error', error);
       if (state) toLogin.searchParams.set('state', state);
       set.status = 302;
+      set.headers['Set-Cookie'] = clearCookie(OAUTH_STATE_COOKIE);
+      set.headers.Location = toLogin.toString();
+      return { success: false, redirectTo: toLogin.toString() };
+    }
+
+    if (!state || !stateFromCookie || state !== stateFromCookie) {
+      toLogin.searchParams.set('error', 'oauth_state_mismatch');
+      set.status = 302;
+      set.headers['Set-Cookie'] = clearCookie(OAUTH_STATE_COOKIE);
       set.headers.Location = toLogin.toString();
       return { success: false, redirectTo: toLogin.toString() };
     }
@@ -175,6 +345,7 @@ export const authRouter = new Elysia({ prefix: '/auth' })
       toLogin.searchParams.set('error', 'oauth_not_configured');
       if (state) toLogin.searchParams.set('state', state);
       set.status = 302;
+      set.headers['Set-Cookie'] = clearCookie(OAUTH_STATE_COOKIE);
       set.headers.Location = toLogin.toString();
       return { success: false, redirectTo: toLogin.toString() };
     }
@@ -192,8 +363,9 @@ export const authRouter = new Elysia({ prefix: '/auth' })
       };
 
       const signed = signSession(payload);
-      const cookie = `${SESSION_COOKIE}=${encodeURIComponent(signed)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_TTL_SECONDS}`;
-      set.headers['Set-Cookie'] = cookie;
+      await persistSupabaseSession(signed, user);
+
+      set.headers['Set-Cookie'] = buildCookie(SESSION_COOKIE, signed, SESSION_TTL_SECONDS);
 
       toDashboard.searchParams.set('oauth', 'ok');
       if (state) toDashboard.searchParams.set('state', state);
@@ -206,6 +378,7 @@ export const authRouter = new Elysia({ prefix: '/auth' })
       toLogin.searchParams.set('error', 'oauth_exchange_failed');
       if (state) toLogin.searchParams.set('state', state);
       set.status = 302;
+      set.headers['Set-Cookie'] = clearCookie(OAUTH_STATE_COOKIE);
       set.headers.Location = toLogin.toString();
       return {
         success: false,
@@ -214,31 +387,51 @@ export const authRouter = new Elysia({ prefix: '/auth' })
       };
     }
   })
-  .get('/me', ({ request, set }) => {
+  .get('/me', async ({ request, set }) => {
     const cookies = parseCookieHeader(request.headers.get('cookie') ?? undefined);
-    const session = verifySession(cookies[SESSION_COOKIE]);
+    const sessionToken = cookies[SESSION_COOKIE];
+    const session = verifySession(sessionToken);
 
-    if (!session) {
+    if (!session || !sessionToken) {
       set.status = 401;
       return { success: false, error: 'Not authenticated' };
     }
 
+    const dbSession = await findSupabaseSession(sessionToken);
+
+    if (!dbSession && isSupabaseConfigured) {
+      set.status = 401;
+      return { success: false, error: 'Session not found' };
+    }
+
+    const userId = dbSession?.id ?? session.sub;
+    const username = dbSession?.username ?? session.username;
+    const displayName = dbSession?.displayName ?? session.globalName ?? session.username;
+    const avatarHash = dbSession?.avatarHash ?? session.avatar ?? null;
+
     return {
       success: true,
       user: {
-        id: session.sub,
-        username: session.username,
-        displayName: session.globalName || session.username,
+        id: userId,
+        username,
+        displayName,
         avatarUrl: buildAvatarUrl({
-          id: session.sub,
-          username: session.username,
-          global_name: session.globalName,
-          avatar: session.avatar,
+          id: userId,
+          username,
+          global_name: displayName,
+          avatar: avatarHash,
         }),
       },
     };
   })
-  .post('/logout', ({ set }) => {
-    set.headers['Set-Cookie'] = `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+  .post('/logout', async ({ request, set }) => {
+    const cookies = parseCookieHeader(request.headers.get('cookie') ?? undefined);
+    const sessionToken = cookies[SESSION_COOKIE];
+
+    if (sessionToken) {
+      await removeSupabaseSession(sessionToken);
+    }
+
+    set.headers['Set-Cookie'] = clearCookie(SESSION_COOKIE);
     return { success: true };
   });
