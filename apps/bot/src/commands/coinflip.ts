@@ -1,5 +1,6 @@
 import { Command, type CommandContext, Declare } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { randomItem } from '../lib/fun-tools.js';
 
 const outcomes = ['Heads', 'Tails'];
 
@@ -9,7 +10,7 @@ const outcomes = ['Heads', 'Tails'];
 })
 export default class CoinflipCommand extends Command {
   async run(ctx: CommandContext) {
-    const outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+    const outcome = randomItem(outcomes);
 
     const embed = createPawsitiveEmbed('Coin Flip', 'accent').setDescription(
       [

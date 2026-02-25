@@ -1,5 +1,6 @@
 import { Command, type CommandContext, createIntegerOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { rollDice } from '../lib/fun-tools.js';
 
 const options = {
   sides: createIntegerOption({
@@ -23,11 +24,7 @@ const options = {
 @Options(options)
 export default class RollCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const sides = ctx.options.sides ?? 6;
-    const count = ctx.options.count ?? 1;
-
-    const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
-    const total = rolls.reduce((sum, n) => sum + n, 0);
+    const { rolls, total, sides, count } = rollDice(ctx.options.sides ?? 6, ctx.options.count ?? 1);
 
     const embed = createPawsitiveEmbed('Dice Roll', 'primary').setDescription(
       [

@@ -1,10 +1,11 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { parseChoices, randomItem, resolveStringInput } from '../lib/fun-tools.js';
 
 const options = {
   choices: createStringOption({
     description: 'Comma-separated options (e.g. cats,dogs,snacks)',
-    required: true,
+    required: false,
     max_length: 300,
   }),
 };
@@ -16,10 +17,9 @@ const options = {
 @Options(options)
 export default class ChooseCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const parsed = ctx.options.choices
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const raw = resolveStringInput(ctx, 'choices', process.env.BOT_PREFIX ?? '!');
+
+    const parsed = parseChoices(raw ?? '');
 
     if (parsed.length < 2) {
       await ctx.write({
@@ -32,7 +32,7 @@ export default class ChooseCommand extends Command {
       return;
     }
 
-    const picked = parsed[Math.floor(Math.random() * parsed.length)];
+    const picked = randomItem(parsed);
 
     await ctx.write({
       embeds: [

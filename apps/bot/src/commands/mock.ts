@@ -1,20 +1,14 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { mockCase, resolveStringInput } from '../lib/fun-tools.js';
 
 const options = {
   text: createStringOption({
     description: 'Text to convert into mock case',
-    required: true,
+    required: false,
     max_length: 300,
   }),
 };
-
-function mockCase(input: string) {
-  return input
-    .split('')
-    .map((ch, i) => (i % 2 === 0 ? ch.toLowerCase() : ch.toUpperCase()))
-    .join('');
-}
 
 @Declare({
   name: 'mock',
@@ -23,7 +17,20 @@ function mockCase(input: string) {
 @Options(options)
 export default class MockCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const output = mockCase(ctx.options.text);
+    const input = resolveStringInput(ctx, 'text', process.env.BOT_PREFIX ?? '!');
+
+    if (!input) {
+      await ctx.write({
+        embeds: [
+          createPawsitiveEmbed('Missing text', 'danger').setDescription(
+            '> **Uso:** `/mock text:...` o `!mock no me hables así`',
+          ),
+        ],
+      });
+      return;
+    }
+
+    const output = mockCase(input);
 
     await ctx.write({
       embeds: [createPawsitiveEmbed('Mock Case', 'accent').setDescription(`**${output}**`)],
