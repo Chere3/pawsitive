@@ -12,7 +12,7 @@ export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseServiceRoleKe
 
 export async function supabaseRequest<T = unknown>(
   table: string,
-  options: SupabaseRequestOptions = {}
+  options: SupabaseRequestOptions = {},
 ): Promise<{ data: T | null; error: string | null }> {
   if (!isSupabaseConfigured || !supabaseUrl || !supabaseServiceRoleKey) {
     return { data: null, error: 'SUPABASE_NOT_CONFIGURED' };

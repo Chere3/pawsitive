@@ -1,6 +1,6 @@
 /**
  * Image Interaction Module
- * 
+ *
  * This module provides an abstraction layer for handling image-based interactions.
  * It's designed to be extended with actual image processing libraries and APIs.
  */
@@ -28,27 +28,27 @@ export class ImageInteractionHandler {
    */
   async processImage(
     imageUrl: string,
-    options: ImageProcessingOptions
+    options: ImageProcessingOptions,
   ): Promise<ImageProcessingResult> {
     const startTime = Date.now();
-    
+
     try {
       this.logger.info({ imageUrl, operation: options.operation }, 'Processing image...');
-      
+
       // TODO: Implement actual image processing
       // This is a placeholder for future implementation
       // Consider using libraries like:
       // - sharp (for Node.js)
       // - jimp (pure JavaScript)
       // - External APIs (Cloudinary, imgix, etc.)
-      
+
       // For now, return a mock success response
       await this.delay(500); // Simulate processing
-      
+
       const processingTime = Date.now() - startTime;
-      
+
       this.logger.info({ processingTime }, 'Image processed successfully');
-      
+
       return {
         success: true,
         processingTime,
@@ -57,7 +57,7 @@ export class ImageInteractionHandler {
       };
     } catch (error) {
       this.logger.error({ error, imageUrl }, 'Image processing failed');
-      
+
       return {
         success: false,
         processingTime: Date.now() - startTime,
@@ -77,25 +77,25 @@ export class ImageInteractionHandler {
   }> {
     try {
       const response = await fetch(imageUrl, { method: 'HEAD' });
-      
+
       if (!response.ok) {
         return { valid: false, error: `HTTP ${response.status}` };
       }
-      
+
       const contentType = response.headers.get('content-type');
       const contentLength = response.headers.get('content-length');
-      
+
       if (!contentType?.startsWith('image/')) {
         return { valid: false, error: 'Not an image' };
       }
-      
+
       const size = contentLength ? parseInt(contentLength, 10) : undefined;
       const maxSize = 10 * 1024 * 1024; // 10MB
-      
+
       if (size && size > maxSize) {
         return { valid: false, error: 'Image too large' };
       }
-      
+
       return { valid: true, contentType, size };
     } catch (error) {
       return {
@@ -110,16 +110,16 @@ export class ImageInteractionHandler {
    */
   async downloadImage(imageUrl: string): Promise<Buffer> {
     const response = await fetch(imageUrl);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to download image: HTTP ${response.status}`);
     }
-    
+
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer);
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

@@ -1,10 +1,4 @@
-import {
-  Command,
-  Declare,
-  Options,
-  createUserOption,
-  type CommandContext,
-} from 'seyfert';
+import { Command, type CommandContext, createUserOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 const options = {
@@ -32,15 +26,21 @@ export default class BoopCommand extends Command {
     const target = ctx.options.user;
 
     if (target.id === actor.id) {
-      const embed = createPawsitiveEmbed('Self boop', 'accent')
-        .setDescription(['Self-boop unlocked. Cute and valid.', '', '> **Uso:** `/boop user:@someone`'].join('\n'));
+      const embed = createPawsitiveEmbed('Self boop', 'accent').setDescription(
+        ['Self-boop unlocked. Cute and valid.', '', '> **Uso:** `/boop user:@someone`'].join('\n'),
+      );
       await ctx.write({ embeds: [embed] });
       return;
     }
 
     const action = lines[Math.floor(Math.random() * lines.length)];
-    const embed = createPawsitiveEmbed('Boop Delivered', 'accent')
-      .setDescription([`**${actor.username}** ${action} **${target.username}**`, '', '> **Uso:** `/boop user:@someone`'].join('\n'));
+    const embed = createPawsitiveEmbed('Boop Delivered', 'accent').setDescription(
+      [
+        `**${actor.username}** ${action} **${target.username}**`,
+        '',
+        '> **Uso:** `/boop user:@someone`',
+      ].join('\n'),
+    );
 
     await ctx.write({ embeds: [embed] });
   }

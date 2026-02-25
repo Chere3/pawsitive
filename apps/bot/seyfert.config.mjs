@@ -1,15 +1,11 @@
-import { config } from "seyfert";
+import { config } from 'seyfert';
 
 export default config.bot({
-  token: process.env.BOT_TOKEN ?? "",
-  intents: [
-    "Guilds",
-    "GuildMessages",
-    "MessageContent"
-  ],
+  token: process.env.BOT_TOKEN ?? '',
+  intents: ['Guilds', 'GuildMessages', 'MessageContent'],
   locations: {
-    base: "src",
-    commands: "commands",
-    events: "events",
+    base: 'src',
+    commands: 'commands',
+    events: 'events',
   },
 });

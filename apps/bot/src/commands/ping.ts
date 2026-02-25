@@ -1,42 +1,37 @@
-import { 
-  Command, 
-  Declare, 
-  Options,
-  createBooleanOption,
-  type CommandContext 
-} from 'seyfert';
+import { Command, type CommandContext, createBooleanOption, Declare, Options } from 'seyfert';
 import { MessageFlags } from 'seyfert/lib/types';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 const options = {
   hide: createBooleanOption({
-    description: "Hide the response (ephemeral)",
+    description: 'Hide the response (ephemeral)',
   }),
 };
 
 @Declare({
   name: 'ping',
-  description: '🏓 Check bot latency and response time'
+  description: '🏓 Check bot latency and response time',
 })
 @Options(options)
 export default class PingCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
     const start = Date.now();
     const flags = ctx.options.hide ? MessageFlags.Ephemeral : undefined;
-    
+
     // Get gateway latency
     const gatewayLatency = ctx.client.gateway.latency;
-    
+
     const roundTrip = Date.now() - start;
 
-    const embed = createPawsitiveEmbed('Ping', 'primary')
-      .setDescription([
+    const embed = createPawsitiveEmbed('Ping', 'primary').setDescription(
+      [
         `⚡ Gateway: \`${gatewayLatency}ms\``,
         `🔄 Round-trip: \`${roundTrip}ms\``,
         `📊 Uptime: \`${formatUptime(process.uptime())}\``,
         '',
         '> **Uso:** `/ping [hide:true|false]`',
-      ].join('\n'));
+      ].join('\n'),
+    );
 
     await ctx.write({
       embeds: [embed],

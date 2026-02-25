@@ -6,15 +6,15 @@ export const webhookRouter = new Elysia({ prefix: '/webhook' })
     async ({ body, set }) => {
       // TODO: Access logger via dependency injection or context
       console.log('Received Discord webhook:', body.type);
-      
+
       // TODO: Implement Discord interaction verification
       // - Verify signature using BOT_PUBLIC_KEY
       // - Handle PING interactions (type 1)
       // - Route to appropriate handlers
-      
+
       // For now, return a basic response
       set.status = 200;
-      
+
       return {
         success: true,
         message: 'Webhook received',
@@ -31,7 +31,7 @@ export const webhookRouter = new Elysia({ prefix: '/webhook' })
         summary: 'Discord webhook endpoint',
         description: 'Receives and processes Discord interaction webhooks',
       },
-    }
+    },
   )
   .get(
     '/discord/status',
@@ -45,5 +45,5 @@ export const webhookRouter = new Elysia({ prefix: '/webhook' })
         summary: 'Webhook status',
         description: 'Returns the status of the Discord webhook endpoint',
       },
-    }
+    },
   );

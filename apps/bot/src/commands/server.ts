@@ -1,4 +1,4 @@
-import { Command, Declare, type CommandContext } from 'seyfert';
+import { Command, type CommandContext, Declare } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 @Declare({
@@ -10,8 +10,9 @@ export default class ServerCommand extends Command {
     const guild = ctx.interaction.guild;
 
     if (!guild) {
-      const embed = createPawsitiveEmbed('Command unavailable', 'danger')
-        .setDescription(['This command only works inside a server 🐾', '', '> **Uso:** `/server`'].join('\n'));
+      const embed = createPawsitiveEmbed('Command unavailable', 'danger').setDescription(
+        ['This command only works inside a server 🐾', '', '> **Uso:** `/server`'].join('\n'),
+      );
       await ctx.write({ embeds: [embed] });
       return;
     }
