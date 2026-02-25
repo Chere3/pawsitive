@@ -21,7 +21,12 @@ declare module 'seyfert' {
 }
 
 // Create and configure client
-const client = new Client();
+const client = new Client({
+  commands: {
+    // Native text-command support in Seyfert
+    prefix: async () => [process.env.BOT_PREFIX ?? '!'],
+  },
+});
 
 // Use our logger (Seyfert has its own logger, we'll use ours separately)
 // Access as 'logger' in this module, not client.logger
