@@ -46,6 +46,60 @@ export const COMMAND_DOCS: HelpCommandDoc[] = [
     usage: '/boop user:@someone | !boop @user',
     category: 'Social',
   },
+  {
+    name: 'coinflip',
+    description: 'Flip a coin.',
+    usage: '/coinflip',
+    category: 'Fun',
+  },
+  {
+    name: 'roll',
+    description: 'Roll one or multiple dice.',
+    usage: '/roll [sides] [count]',
+    category: 'Fun',
+  },
+  {
+    name: '8ball',
+    description: 'Ask the magic 8-ball a question.',
+    usage: '/8ball question:...',
+    category: 'Fun',
+  },
+  {
+    name: 'choose',
+    description: 'Pick one option from a list.',
+    usage: '/choose choices:option1,option2',
+    category: 'Fun',
+  },
+  {
+    name: 'vibecheck',
+    description: 'Random vibe score for a user.',
+    usage: '/vibecheck [user]',
+    category: 'Fun',
+  },
+  {
+    name: 'ship',
+    description: 'Chaotic compatibility meter.',
+    usage: '/ship user1:@a user2:@b',
+    category: 'Fun',
+  },
+  {
+    name: 'uwu',
+    description: 'Convert text to uwu mode.',
+    usage: '/uwu text:...',
+    category: 'Fun',
+  },
+  {
+    name: 'clap',
+    description: 'Insert dramatic clap spacing.',
+    usage: '/clap text:...',
+    category: 'Fun',
+  },
+  {
+    name: 'mock',
+    description: 'Convert text to mock case.',
+    usage: '/mock text:...',
+    category: 'Fun',
+  },
 ];
 
 export const CATEGORIES = Array.from(new Set(COMMAND_DOCS.map((c) => c.category)));
