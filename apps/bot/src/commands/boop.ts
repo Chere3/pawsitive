@@ -1,5 +1,6 @@
 import { Command, type CommandContext, createUserOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { boopLines, randomItem } from '../lib/fun-tools.js';
 
 const options = {
   user: createUserOption({
@@ -7,13 +8,6 @@ const options = {
     required: true,
   }),
 };
-
-const lines = [
-  'gives a playful nose boop 🐾',
-  'boops with extra floof energy ✨',
-  'delivers an elite boop combo 🎯',
-  'boops and runs away dramatically 💨',
-];
 
 @Declare({
   name: 'boop',
@@ -33,7 +27,7 @@ export default class BoopCommand extends Command {
       return;
     }
 
-    const action = lines[Math.floor(Math.random() * lines.length)];
+    const action = randomItem(boopLines);
     const embed = createPawsitiveEmbed('Boop Delivered', 'accent').setDescription(
       [
         `**${actor.username}** ${action} **${target.username}**`,

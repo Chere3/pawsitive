@@ -1,5 +1,6 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { clapify } from '../lib/fun-tools.js';
 
 const options = {
   text: createStringOption({
@@ -16,7 +17,7 @@ const options = {
 @Options(options)
 export default class ClapCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const output = ctx.options.text.split(/\s+/).filter(Boolean).join(' 👏 ');
+    const output = clapify(ctx.options.text);
 
     await ctx.write({
       embeds: [createPawsitiveEmbed('Clapifier', 'primary').setDescription(`**${output}**`)],

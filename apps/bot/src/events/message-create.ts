@@ -2,6 +2,18 @@ import { ActionRow, Button, createEvent } from 'seyfert';
 import { ButtonStyle } from 'seyfert/lib/types';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
 import {
+  boopLines,
+  clapify,
+  eightBallAnswers,
+  mockCase,
+  parseChoices,
+  randomItem,
+  rollDice,
+  shipVerdict,
+  uwuify,
+  vibeTier,
+} from '../lib/fun-tools.js';
+import {
   buildCategoryHelp,
   buildCommandHelp,
   buildHelpOverview,
@@ -172,13 +184,7 @@ export default createEvent({
           return;
         }
 
-        const lines = [
-          'gives a playful nose boop 🐾',
-          'boops with extra floof energy ✨',
-          'delivers an elite boop combo 🎯',
-          'boops and runs away dramatically 💨',
-        ];
-        const action = lines[Math.floor(Math.random() * lines.length)];
+        const action = randomItem(boopLines);
         const embed = createPawsitiveEmbed('Boop Delivered', 'accent').setDescription(
           [
             `**${message.author.username}** ${action} **${target.username}**`,
@@ -188,6 +194,206 @@ export default createEvent({
         );
 
         await message.reply({ embeds: [embed] });
+        break;
+      }
+
+      case 'coinflip': {
+        const outcome = randomItem(['Heads', 'Tails']);
+        const embed = createPawsitiveEmbed('Coin Flip', 'accent').setDescription(
+          [
+            `Result: **${outcome}** ${outcome === 'Heads' ? '🦊' : '🐺'}`,
+            '',
+            `> **Uso:** \`${PREFIX}coinflip\``,
+          ].join('\n'),
+        );
+        await message.reply({ embeds: [embed] });
+        break;
+      }
+
+      case 'roll': {
+        const sidesRaw = Number.parseInt(args[0] ?? '6', 10);
+        const countRaw = Number.parseInt(args[1] ?? '1', 10);
+        const sides = Number.isNaN(sidesRaw) ? 6 : Math.max(2, Math.min(100, sidesRaw));
+        const count = Number.isNaN(countRaw) ? 1 : Math.max(1, Math.min(10, countRaw));
+        const { rolls, total } = rollDice(sides, count);
+
+        const embed = createPawsitiveEmbed('Dice Roll', 'primary').setDescription(
+          [
+            `Rolled **${count}d${sides}**`,
+            `Results: ${rolls.map((n) => `\`${n}\``).join(', ')}`,
+            `Total: **${total}**`,
+            '',
+            `> **Uso:** \`${PREFIX}roll [sides] [count]\``,
+          ].join('\n'),
+        );
+
+        await message.reply({ embeds: [embed] });
+        break;
+      }
+
+      case '8ball': {
+        const question = args.join(' ').trim();
+        if (!question) {
+          await message.reply({
+            embeds: [
+              createPawsitiveEmbed('Missing question', 'danger').setDescription(
+                `Usage: \`${PREFIX}8ball <question>\``,
+              ),
+            ],
+          });
+          break;
+        }
+
+        const answer = randomItem(eightBallAnswers);
+        await message.reply({
+          embeds: [
+            createPawsitiveEmbed('Magic 8-Ball', 'accent').setDescription(
+              [`❓ **Question:** ${question}`, `🎱 **Answer:** ${answer}`].join('\n'),
+            ),
+          ],
+        });
+        break;
+      }
+
+      case 'choose': {
+        const parsed = parseChoices(args.join(' '));
+        if (parsed.length < 2) {
+          await message.reply({
+            embeds: [
+              createPawsitiveEmbed('Need more options', 'danger').setDescription(
+                `Usage: \`${PREFIX}choose pizza,sushi,tacos\``,
+              ),
+            ],
+          });
+          break;
+        }
+
+        const picked = randomItem(parsed);
+        await message.reply({
+          embeds: [
+            createPawsitiveEmbed('Decision made', 'success').setDescription(
+              [
+                `Options: ${parsed.map((o) => `\`${o}\``).join(', ')}`,
+                `Picked: **${picked}**`,
+              ].join('\n'),
+            ),
+          ],
+        });
+        break;
+      }
+
+      case 'vibecheck': {
+        const firstMention = message.mentions?.users?.[0];
+        const target = firstMention ? toUser(firstMention) : message.author;
+        const score = Math.floor(Math.random() * 101);
+
+        await message.reply({
+          embeds: [
+            createPawsitiveEmbed('Vibe Check', 'primary').setDescription(
+              [
+                `Target: **${target.username}**`,
+                `Score: **${score}/100**`,
+                `Status: ${vibeTier(score)}`,
+              ].join('\n'),
+            ),
+          ],
+        });
+        break;
+      }
+
+      case 'ship': {
+        const first = message.mentions?.users?.[0];
+        const second = message.mentions?.users?.[1];
+
+        if (!first || !second) {
+          await message.reply({
+            embeds: [
+              createPawsitiveEmbed('Missing users', 'danger').setDescription(
+                `Usage: \`${PREFIX}ship @user1 @user2\``,
+              ),
+            ],
+          });
+          break;
+        }
+
+        const user1 = toUser(first);
+        const user2 = toUser(second);
+        const score = Math.floor(Math.random() * 101);
+
+        await message.reply({
+          embeds: [
+            createPawsitiveEmbed('Ship Meter', 'accent').setDescription(
+              [
+                `Pair: **${user1.username}** × **${user2.username}**`,
+                `Compatibility: **${score}%**`,
+                `Verdict: ${shipVerdict(score)}`,
+              ].join('\n'),
+            ),
+          ],
+        });
+        break;
+      }
+
+      case 'uwu': {
+        const input = args.join(' ').trim();
+        if (!input) {
+          await message.reply({
+            embeds: [
+              createPawsitiveEmbed('Missing text', 'danger').setDescription(
+                `Usage: \`${PREFIX}uwu <text>\``,
+              ),
+            ],
+          });
+          break;
+        }
+
+        await message.reply({
+          embeds: [
+            createPawsitiveEmbed('Uwu Converter', 'accent').setDescription(`**${uwuify(input)}**`),
+          ],
+        });
+        break;
+      }
+
+      case 'clap': {
+        const input = args.join(' ').trim();
+        if (!input) {
+          await message.reply({
+            embeds: [
+              createPawsitiveEmbed('Missing text', 'danger').setDescription(
+                `Usage: \`${PREFIX}clap <text>\``,
+              ),
+            ],
+          });
+          break;
+        }
+
+        await message.reply({
+          embeds: [
+            createPawsitiveEmbed('Clapifier', 'primary').setDescription(`**${clapify(input)}**`),
+          ],
+        });
+        break;
+      }
+
+      case 'mock': {
+        const input = args.join(' ').trim();
+        if (!input) {
+          await message.reply({
+            embeds: [
+              createPawsitiveEmbed('Missing text', 'danger').setDescription(
+                `Usage: \`${PREFIX}mock <text>\``,
+              ),
+            ],
+          });
+          break;
+        }
+
+        await message.reply({
+          embeds: [
+            createPawsitiveEmbed('Mock Case', 'accent').setDescription(`**${mockCase(input)}**`),
+          ],
+        });
         break;
       }
 

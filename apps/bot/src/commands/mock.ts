@@ -1,5 +1,6 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { mockCase } from '../lib/fun-tools.js';
 
 const options = {
   text: createStringOption({
@@ -8,13 +9,6 @@ const options = {
     max_length: 300,
   }),
 };
-
-function mockCase(input: string) {
-  return input
-    .split('')
-    .map((ch, i) => (i % 2 === 0 ? ch.toLowerCase() : ch.toUpperCase()))
-    .join('');
-}
 
 @Declare({
   name: 'mock',

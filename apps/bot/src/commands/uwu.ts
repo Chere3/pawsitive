@@ -1,5 +1,6 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { uwuify } from '../lib/fun-tools.js';
 
 const options = {
   text: createStringOption({
@@ -8,15 +9,6 @@ const options = {
     max_length: 300,
   }),
 };
-
-function uwuify(input: string) {
-  return input
-    .replace(/[rl]/g, 'w')
-    .replace(/[RL]/g, 'W')
-    .replace(/n([aeiou])/gi, 'ny$1')
-    .replace(/ove/gi, 'uv')
-    .replace(/!+/g, ' uwu!');
-}
 
 @Declare({
   name: 'uwu',

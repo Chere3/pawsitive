@@ -1,5 +1,6 @@
 import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import { parseChoices, randomItem } from '../lib/fun-tools.js';
 
 const options = {
   choices: createStringOption({
@@ -16,10 +17,7 @@ const options = {
 @Options(options)
 export default class ChooseCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    const parsed = ctx.options.choices
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const parsed = parseChoices(ctx.options.choices);
 
     if (parsed.length < 2) {
       await ctx.write({
@@ -32,7 +30,7 @@ export default class ChooseCommand extends Command {
       return;
     }
 
-    const picked = parsed[Math.floor(Math.random() * parsed.length)];
+    const picked = randomItem(parsed);
 
     await ctx.write({
       embeds: [
