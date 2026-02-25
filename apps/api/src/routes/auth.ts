@@ -1,5 +1,5 @@
-import { Elysia } from 'elysia';
 import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { Elysia } from 'elysia';
 import { isSupabaseConfigured, supabaseRequest } from '../lib/supabase.js';
 
 type DiscordUser = {
@@ -29,7 +29,8 @@ function isProduction() {
 function getDiscordOAuthConfig() {
   const clientId = process.env.DISCORD_CLIENT_ID;
   const clientSecret = process.env.DISCORD_CLIENT_SECRET;
-  const redirectUri = process.env.DISCORD_REDIRECT_URI ?? 'http://localhost:3000/auth/discord/callback';
+  const redirectUri =
+    process.env.DISCORD_REDIRECT_URI ?? 'http://localhost:3000/auth/discord/callback';
   const scope = process.env.DISCORD_SCOPE ?? 'identify guilds';
   const dashboardUrl = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
 
@@ -40,7 +41,9 @@ function getSessionSecret() {
   const secret = process.env.API_SECRET;
 
   if (!secret && isProduction()) {
-    throw new Error('API_SECRET is required in production. Refusing to run with insecure fallback secret.');
+    throw new Error(
+      'API_SECRET is required in production. Refusing to run with insecure fallback secret.',
+    );
   }
 
   return secret || 'pawsitive-dev-session-secret-change-me';
@@ -120,8 +123,10 @@ function parseCookieHeader(cookieHeader?: string) {
       .filter(Boolean)
       .map((pair) => {
         const idx = pair.indexOf('=');
-        return idx === -1 ? [pair, ''] : [pair.slice(0, idx), decodeURIComponent(pair.slice(idx + 1))];
-      })
+        return idx === -1
+          ? [pair, '']
+          : [pair.slice(0, idx), decodeURIComponent(pair.slice(idx + 1))];
+      }),
   );
 }
 
@@ -243,7 +248,11 @@ async function persistSupabaseSession(sessionToken: string, user: DiscordUser) {
 async function findSupabaseSession(sessionToken: string) {
   if (!isSupabaseConfigured) return null;
 
-  const sessionLookup = await supabaseRequest<{ user_id: string; expires_at: string; revoked_at: string | null }>('sessions', {
+  const sessionLookup = await supabaseRequest<{
+    user_id: string;
+    expires_at: string;
+    revoked_at: string | null;
+  }>('sessions', {
     query: {
       token_hash: `eq.${hashToken(sessionToken)}`,
       revoked_at: 'is.null',
@@ -256,7 +265,12 @@ async function findSupabaseSession(sessionToken: string) {
   if (sessionLookup.error || !sessionLookup.data) return null;
   if (new Date(sessionLookup.data.expires_at).getTime() <= Date.now()) return null;
 
-  const userLookup = await supabaseRequest<{ id: string; username: string; display_name: string | null; avatar_hash: string | null }>('users', {
+  const userLookup = await supabaseRequest<{
+    id: string;
+    username: string;
+    display_name: string | null;
+    avatar_hash: string | null;
+  }>('users', {
     query: {
       id: `eq.${sessionLookup.data.user_id}`,
       select: 'id,username,display_name,avatar_hash',
@@ -304,7 +318,11 @@ export const authRouter = new Elysia({ prefix: '/auth' })
     discordUrl.searchParams.set('prompt', 'consent');
     discordUrl.searchParams.set('state', state);
 
-    set.headers['Set-Cookie'] = buildCookie(OAUTH_STATE_COOKIE, createOAuthStateCookieValue(state), OAUTH_STATE_TTL_SECONDS);
+    set.headers['Set-Cookie'] = buildCookie(
+      OAUTH_STATE_COOKIE,
+      createOAuthStateCookieValue(state),
+      OAUTH_STATE_TTL_SECONDS,
+    );
     set.status = 302;
     set.headers.Location = discordUrl.toString();
 

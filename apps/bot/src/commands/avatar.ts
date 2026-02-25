@@ -1,10 +1,4 @@
-import {
-  Command,
-  Declare,
-  Options,
-  createUserOption,
-  type CommandContext,
-} from 'seyfert';
+import { Command, type CommandContext, createUserOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 const options = {
@@ -28,7 +22,9 @@ export default class AvatarCommand extends Command {
 
     const embed = createPawsitiveEmbed(`Avatar — ${target.username}`, 'accent')
       .setImage(avatarUrl)
-      .setDescription([`[Open original](${avatarUrl})`, '', '> **Uso:** `/avatar [user]`'].join('\n'))
+      .setDescription(
+        [`[Open original](${avatarUrl})`, '', '> **Uso:** `/avatar [user]`'].join('\n'),
+      )
       .setFooter({ text: 'Pawsitive • Avatar Lookup' });
 
     await ctx.write({ embeds: [embed] });

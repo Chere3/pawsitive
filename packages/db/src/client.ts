@@ -21,5 +21,7 @@ export function all<T extends Row = Row>(sql: string, params?: unknown[]) {
 }
 
 export function get<T extends Row = Row>(sql: string, params?: unknown[]) {
-  return params ? (db.prepare(sql).get(...params) as T | null) : (db.prepare(sql).get() as T | null);
+  return params
+    ? (db.prepare(sql).get(...params) as T | null)
+    : (db.prepare(sql).get() as T | null);
 }

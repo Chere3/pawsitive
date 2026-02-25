@@ -1,15 +1,28 @@
 import { ActionRow, Button, createEvent } from 'seyfert';
 import { ButtonStyle } from 'seyfert/lib/types';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
-import { buildCategoryHelp, buildCommandHelp, buildHelpOverview, findCategory, findCommand } from '../lib/help-center.js';
+import {
+  buildCategoryHelp,
+  buildCommandHelp,
+  buildHelpOverview,
+  findCategory,
+  findCommand,
+} from '../lib/help-center.js';
 
 const PREFIX = process.env.BOT_PREFIX ?? '!';
 const DASHBOARD_URL = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
-const INVITE_URL = process.env.BOT_INVITE_URL ?? 'https://discord.com/oauth2/authorize?client_id=1475710537332691096&scope=bot%20applications.commands&permissions=274878024704';
+const INVITE_URL =
+  process.env.BOT_INVITE_URL ??
+  'https://discord.com/oauth2/authorize?client_id=1475710537332691096&scope=bot%20applications.commands&permissions=274878024704';
 const SUPPORT_URL = process.env.BOT_SUPPORT_URL ?? 'https://discord.gg/pawsitive';
 
 function toUser(entity: unknown) {
-  const maybe = entity as { user?: { id: string; username: string; avatarURL?: (...args: any[]) => string | null }; id?: string; username?: string; avatarURL?: (...args: any[]) => string | null };
+  const maybe = entity as {
+    user?: { id: string; username: string; avatarURL?: (...args: any[]) => string | null };
+    id?: string;
+    username?: string;
+    avatarURL?: (...args: any[]) => string | null;
+  };
   return maybe.user ?? maybe;
 }
 
@@ -41,20 +54,27 @@ export default createEvent({
     switch (command) {
       case 'ping': {
         const gatewayLatency = client.gateway.latency;
-        const embed = createPawsitiveEmbed('Ping', 'primary')
-          .setDescription([
+        const embed = createPawsitiveEmbed('Ping', 'primary').setDescription(
+          [
             `⚡ Gateway: \`${gatewayLatency}ms\``,
             `📊 Uptime: \`${formatUptime(process.uptime())}\``,
             '',
             `> **Uso:** \`${PREFIX}ping\``,
-          ].join('\n'));
+          ].join('\n'),
+        );
         await message.reply({ embeds: [embed] });
         break;
       }
 
       case 'info': {
         const embed = createPawsitiveEmbed('Pawsitive Bot', 'primary')
-          .setDescription(['Professional furry-themed Discord bot platform.', '', `> **Uso:** \`${PREFIX}info\``].join('\n'))
+          .setDescription(
+            [
+              'Professional furry-themed Discord bot platform.',
+              '',
+              `> **Uso:** \`${PREFIX}info\``,
+            ].join('\n'),
+          )
           .addFields([
             {
               name: 'Stats',
@@ -76,7 +96,7 @@ export default createEvent({
         const actions = new ActionRow<Button>().addComponents(
           new Button().setStyle(ButtonStyle.Link).setLabel('Dashboard').setURL(DASHBOARD_URL),
           new Button().setStyle(ButtonStyle.Link).setLabel('Invite').setURL(INVITE_URL),
-          new Button().setStyle(ButtonStyle.Link).setLabel('Support').setURL(SUPPORT_URL)
+          new Button().setStyle(ButtonStyle.Link).setLabel('Support').setURL(SUPPORT_URL),
         );
 
         await message.reply({ embeds: [embed], components: [actions] });
@@ -92,7 +112,11 @@ export default createEvent({
 
         const embed = createPawsitiveEmbed(`Avatar — ${target.username}`, 'accent')
           .setImage(avatarUrl)
-          .setDescription([`[Open original](${avatarUrl})`, '', `> **Uso:** \`${PREFIX}avatar [@user]\``].join('\n'));
+          .setDescription(
+            [`[Open original](${avatarUrl})`, '', `> **Uso:** \`${PREFIX}avatar [@user]\``].join(
+              '\n',
+            ),
+          );
 
         await message.reply({ embeds: [embed] });
         break;
@@ -100,8 +124,13 @@ export default createEvent({
 
       case 'server': {
         if (!message.guildId) {
-          const embed = createPawsitiveEmbed('Command unavailable', 'danger')
-            .setDescription(['This command only works inside a server 🐾', '', `> **Uso:** \`${PREFIX}server\``].join('\n'));
+          const embed = createPawsitiveEmbed('Command unavailable', 'danger').setDescription(
+            [
+              'This command only works inside a server 🐾',
+              '',
+              `> **Uso:** \`${PREFIX}server\``,
+            ].join('\n'),
+          );
           await message.reply({ embeds: [embed] });
           return;
         }
@@ -123,16 +152,22 @@ export default createEvent({
       case 'boop': {
         const firstMention = message.mentions?.users?.[0];
         if (!firstMention) {
-          const embed = createPawsitiveEmbed('Missing argument', 'danger')
-            .setDescription([`You need to mention a target user.`, '', `> **Uso:** \`${PREFIX}boop @user\``].join('\n'));
+          const embed = createPawsitiveEmbed('Missing argument', 'danger').setDescription(
+            [`You need to mention a target user.`, '', `> **Uso:** \`${PREFIX}boop @user\``].join(
+              '\n',
+            ),
+          );
           await message.reply({ embeds: [embed] });
           return;
         }
 
         const target = toUser(firstMention);
         if (target.id === message.author.id) {
-          const embed = createPawsitiveEmbed('Self boop', 'accent')
-            .setDescription(['Self-boop unlocked. Cute and valid.', '', `> **Uso:** \`${PREFIX}boop @user\``].join('\n'));
+          const embed = createPawsitiveEmbed('Self boop', 'accent').setDescription(
+            ['Self-boop unlocked. Cute and valid.', '', `> **Uso:** \`${PREFIX}boop @user\``].join(
+              '\n',
+            ),
+          );
           await message.reply({ embeds: [embed] });
           return;
         }
@@ -144,12 +179,13 @@ export default createEvent({
           'boops and runs away dramatically 💨',
         ];
         const action = lines[Math.floor(Math.random() * lines.length)];
-        const embed = createPawsitiveEmbed('Boop Delivered', 'accent')
-          .setDescription([
+        const embed = createPawsitiveEmbed('Boop Delivered', 'accent').setDescription(
+          [
             `**${message.author.username}** ${action} **${target.username}**`,
             '',
             `> **Uso:** \`${PREFIX}boop @user\``,
-          ].join('\n'));
+          ].join('\n'),
+        );
 
         await message.reply({ embeds: [embed] });
         break;
@@ -171,18 +207,20 @@ export default createEvent({
             break;
           }
 
-          const notFound = createPawsitiveEmbed('Unknown help target', 'danger').setDescription([
-            `No command/category found for: **${query}**`,
-            '',
-            `> **Uso:** \`${PREFIX}help [category|command]\``,
-          ].join('\n'));
+          const notFound = createPawsitiveEmbed('Unknown help target', 'danger').setDescription(
+            [
+              `No command/category found for: **${query}**`,
+              '',
+              `> **Uso:** \`${PREFIX}help [category|command]\``,
+            ].join('\n'),
+          );
           await message.reply({ embeds: [notFound] });
           break;
         }
 
         const page = buildHelpOverview(0, PREFIX);
         const linkRow = new ActionRow<Button>().addComponents(
-          new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(DASHBOARD_URL)
+          new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(DASHBOARD_URL),
         );
 
         await message.reply({ embeds: [page.embed], components: [...page.components, linkRow] });

@@ -4,10 +4,12 @@ import { z } from 'zod';
  * Common Zod schemas for validation across apps
  */
 
-export const imageUrlSchema = z.string().url().refine(
-  (url) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url),
-  { message: 'URL must point to an image file' }
-);
+export const imageUrlSchema = z
+  .string()
+  .url()
+  .refine((url) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url), {
+    message: 'URL must point to an image file',
+  });
 
 export const discordIdSchema = z.string().regex(/^\d{17,19}$/, 'Invalid Discord ID format');
 

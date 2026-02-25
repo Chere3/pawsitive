@@ -1,8 +1,8 @@
 import 'dotenv/config';
-import { Client } from 'seyfert';
-import type { ParseClient } from 'seyfert';
 import { validateEnv } from '@pawsitive/config';
 import { createLogger } from '@pawsitive/shared';
+import type { ParseClient } from 'seyfert';
+import { Client } from 'seyfert';
 
 // Validate environment
 const env = validateEnv();
@@ -31,7 +31,7 @@ client
   .start()
   .then(async () => {
     logger.info('🎉 Bot started successfully!');
-    
+
     // Upload commands to Discord
     if (process.env.UPLOAD_COMMANDS === 'true') {
       logger.info('📤 Uploading commands to Discord...');

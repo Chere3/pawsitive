@@ -22,7 +22,7 @@ export const healthRouter = new Elysia({ prefix: '/health' })
         summary: 'Health check',
         description: 'Returns the health status of the API server',
       },
-    }
+    },
   )
   .get(
     '/version',
@@ -36,7 +36,7 @@ export const healthRouter = new Elysia({ prefix: '/health' })
         summary: 'Get API version',
         description: 'Returns the current API version',
       },
-    }
+    },
   )
   .get(
     '/ready',
@@ -56,5 +56,5 @@ export const healthRouter = new Elysia({ prefix: '/health' })
         summary: 'Readiness check',
         description: 'Returns whether the API is ready to handle requests',
       },
-    }
+    },
   );

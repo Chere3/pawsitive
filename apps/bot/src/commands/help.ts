@@ -1,12 +1,12 @@
-import {
-  Command,
-  Declare,
-  Options,
-  createStringOption,
-  type CommandContext,
-} from 'seyfert';
-import { buildCategoryHelp, buildCommandHelp, buildHelpOverview, findCategory, findCommand } from '../lib/help-center.js';
+import { Command, type CommandContext, createStringOption, Declare, Options } from 'seyfert';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
+import {
+  buildCategoryHelp,
+  buildCommandHelp,
+  buildHelpOverview,
+  findCategory,
+  findCommand,
+} from '../lib/help-center.js';
 
 const options = {
   category: createStringOption({ description: 'Category to browse', required: false }),
@@ -27,11 +27,13 @@ export default class HelpCommand extends Command {
       if (!command) {
         await ctx.write({
           embeds: [
-            createPawsitiveEmbed('Unknown command', 'danger').setDescription([
-              `I couldn't find command: **${ctx.options.command}**`,
-              '',
-              `> **Uso:** \`/help command:<name>\``,
-            ].join('\n')),
+            createPawsitiveEmbed('Unknown command', 'danger').setDescription(
+              [
+                `I couldn't find command: **${ctx.options.command}**`,
+                '',
+                `> **Uso:** \`/help command:<name>\``,
+              ].join('\n'),
+            ),
           ],
         });
         return;
@@ -46,11 +48,13 @@ export default class HelpCommand extends Command {
       if (!category) {
         await ctx.write({
           embeds: [
-            createPawsitiveEmbed('Unknown category', 'danger').setDescription([
-              `Available: **Core**, **Utility**, **Social**`,
-              '',
-              `> **Uso:** \`/help category:<name>\``,
-            ].join('\n')),
+            createPawsitiveEmbed('Unknown category', 'danger').setDescription(
+              [
+                `Available: **Core**, **Utility**, **Social**`,
+                '',
+                `> **Uso:** \`/help category:<name>\``,
+              ].join('\n'),
+            ),
           ],
         });
         return;

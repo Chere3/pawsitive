@@ -14,7 +14,7 @@ export function formatBytes(bytes: number, decimals = 2): string {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 }
 
 /**
@@ -39,7 +39,7 @@ export function formatUptime(seconds: number): string {
  * Sleep for specified milliseconds
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -52,14 +52,9 @@ export async function retry<T>(
     initialDelay?: number;
     maxDelay?: number;
     factor?: number;
-  } = {}
+  } = {},
 ): Promise<T> {
-  const {
-    maxAttempts = 3,
-    initialDelay = 1000,
-    maxDelay = 10000,
-    factor = 2,
-  } = options;
+  const { maxAttempts = 3, initialDelay = 1000, maxDelay = 10000, factor = 2 } = options;
 
   let lastError: Error;
   let delay = initialDelay;
@@ -69,7 +64,7 @@ export async function retry<T>(
       return await fn();
     } catch (error) {
       lastError = error as Error;
-      
+
       if (attempt < maxAttempts) {
         await sleep(Math.min(delay, maxDelay));
         delay *= factor;

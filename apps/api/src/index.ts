@@ -1,11 +1,11 @@
-import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { getConfig } from '@pawsitive/config';
 import { createLogger } from '@pawsitive/shared';
-import { healthRouter } from './routes/health.js';
-import { webhookRouter } from './routes/webhook.js';
+import { Elysia } from 'elysia';
 import { apiRouter } from './routes/api.js';
 import { authRouter } from './routes/auth.js';
+import { healthRouter } from './routes/health.js';
+import { webhookRouter } from './routes/webhook.js';
 
 const config = getConfig();
 
@@ -27,7 +27,7 @@ const app = new Elysia()
     cors({
       origin: corsOrigins,
       credentials: true,
-    })
+    }),
   )
   .decorate('logger', logger)
   .decorate('config', config)
@@ -38,7 +38,7 @@ const app = new Elysia()
         method: request.method,
         url: request.url,
       },
-      'Incoming request'
+      'Incoming request',
     );
   })
   .onError(({ error, set }) => {
@@ -68,7 +68,7 @@ app.listen(
   },
   ({ hostname, port }) => {
     logger.info(`🌐 API server running at http://${hostname}:${port}`);
-  }
+  },
 );
 
 process.on('SIGINT', () => {

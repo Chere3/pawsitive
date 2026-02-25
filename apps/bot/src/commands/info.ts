@@ -1,20 +1,24 @@
-import { Command, Declare, type CommandContext } from 'seyfert';
+import { Command, type CommandContext, Declare } from 'seyfert';
 import { ActionRow, Button } from 'seyfert/lib/builders';
 import { ButtonStyle } from 'seyfert/lib/types';
 import { createPawsitiveEmbed } from '../lib/embed-style.js';
 
 @Declare({
   name: 'info',
-  description: 'ℹ️ Show information about Pawsitive bot'
+  description: 'ℹ️ Show information about Pawsitive bot',
 })
 export default class InfoCommand extends Command {
   async run(ctx: CommandContext) {
     const dashboardUrl = process.env.DASHBOARD_URL ?? 'http://localhost:4321';
-    const inviteUrl = process.env.BOT_INVITE_URL ?? 'https://discord.com/oauth2/authorize?client_id=1475710537332691096&scope=bot%20applications.commands&permissions=274878024704';
+    const inviteUrl =
+      process.env.BOT_INVITE_URL ??
+      'https://discord.com/oauth2/authorize?client_id=1475710537332691096&scope=bot%20applications.commands&permissions=274878024704';
     const supportUrl = process.env.BOT_SUPPORT_URL ?? 'https://discord.gg/pawsitive';
 
     const embed = createPawsitiveEmbed('Pawsitive Bot', 'primary')
-      .setDescription('A professional furry-themed Discord bot platform with advanced image interactions!')
+      .setDescription(
+        'A professional furry-themed Discord bot platform with advanced image interactions!',
+      )
       .addFields([
         {
           name: '📊 Stats',
@@ -51,7 +55,7 @@ export default class InfoCommand extends Command {
     const actions = new ActionRow<Button>().addComponents(
       new Button().setStyle(ButtonStyle.Link).setLabel('Open Dashboard').setURL(dashboardUrl),
       new Button().setStyle(ButtonStyle.Link).setLabel('Invite Bot').setURL(inviteUrl),
-      new Button().setStyle(ButtonStyle.Link).setLabel('Support').setURL(supportUrl)
+      new Button().setStyle(ButtonStyle.Link).setLabel('Support').setURL(supportUrl),
     );
 
     await ctx.write({ embeds: [embed], components: [actions] });

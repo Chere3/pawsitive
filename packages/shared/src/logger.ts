@@ -1,27 +1,25 @@
-import pino from 'pino';
 import type { LogLevel } from '@pawsitive/types';
+import pino from 'pino';
 
 /**
  * Create a configured logger instance
  */
-export function createLogger(options: {
-  name: string;
-  level?: LogLevel;
-  pretty?: boolean;
-}) {
+export function createLogger(options: { name: string; level?: LogLevel; pretty?: boolean }) {
   const { name, level = 'info', pretty = process.env.NODE_ENV !== 'production' } = options;
 
   return pino({
     name,
     level,
-    transport: pretty ? {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname',
-      },
-    } : undefined,
+    transport: pretty
+      ? {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: 'HH:MM:ss',
+            ignore: 'pid,hostname',
+          },
+        }
+      : undefined,
   });
 }
 
