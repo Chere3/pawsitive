@@ -18,10 +18,10 @@ const SUPPORT_URL = process.env.BOT_SUPPORT_URL ?? 'https://discord.gg/pawsitive
 
 function toUser(entity: unknown) {
   const maybe = entity as {
-    user?: { id: string; username: string; avatarURL?: (...args: any[]) => string | null };
+    user?: { id: string; username: string; avatarURL?: (...args: unknown[]) => string | null };
     id?: string;
     username?: string;
-    avatarURL?: (...args: any[]) => string | null;
+    avatarURL?: (...args: unknown[]) => string | null;
   };
   return maybe.user ?? maybe;
 }

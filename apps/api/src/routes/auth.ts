@@ -165,10 +165,13 @@ function hashToken(token: string) {
   return createHash('sha256').update(token).digest('hex');
 }
 
-async function exchangeCodeForToken(code: string, cfg: ReturnType<typeof getDiscordOAuthConfig>) {
+async function exchangeCodeForToken(
+  code: string,
+  cfg: { clientId: string; clientSecret: string; redirectUri: string },
+) {
   const body = new URLSearchParams({
-    client_id: cfg.clientId!,
-    client_secret: cfg.clientSecret!,
+    client_id: cfg.clientId,
+    client_secret: cfg.clientSecret,
     grant_type: 'authorization_code',
     code,
     redirect_uri: cfg.redirectUri,
@@ -369,7 +372,11 @@ export const authRouter = new Elysia({ prefix: '/auth' })
     }
 
     try {
-      const accessToken = await exchangeCodeForToken(code, cfg);
+      const accessToken = await exchangeCodeForToken(code, {
+        clientId: cfg.clientId,
+        clientSecret: cfg.clientSecret,
+        redirectUri: cfg.redirectUri,
+      });
       const user = await fetchDiscordUser(accessToken);
 
       const payload: SessionPayload = {

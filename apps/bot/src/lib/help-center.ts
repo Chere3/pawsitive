@@ -67,7 +67,7 @@ export function findCommand(input?: string) {
 export function buildHelpOverview(page: number, prefix: string) {
   const max = CATEGORIES.length;
   const safePage = Math.max(0, Math.min(page, max - 1));
-  const category = CATEGORIES[safePage]!;
+  const category = CATEGORIES[safePage] ?? CATEGORIES[0] ?? 'Core';
   const commands = COMMAND_DOCS.filter((c) => c.category === category);
 
   const embed = createPawsitiveEmbed(`Help Center • ${category}`, 'primary').setDescription(
