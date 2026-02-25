@@ -5,7 +5,7 @@ import { boopLines, randomItem } from '../lib/fun-tools.js';
 const options = {
   user: createUserOption({
     description: 'Who gets booped?',
-    required: true,
+    required: false,
   }),
 };
 
@@ -17,7 +17,21 @@ const options = {
 export default class BoopCommand extends Command {
   async run(ctx: CommandContext<typeof options>) {
     const actor = ctx.interaction.user;
-    const target = ctx.options.user;
+    const message = (
+      ctx as unknown as { message?: { mentions?: { id: string; username: string }[] } }
+    ).message;
+    const target = ctx.options.user ?? message?.mentions?.[0];
+
+    if (!target) {
+      await ctx.write({
+        embeds: [
+          createPawsitiveEmbed('Missing user', 'danger').setDescription(
+            '> **Uso:** `/boop user:@someone` o `!boop @someone`',
+          ),
+        ],
+      });
+      return;
+    }
 
     if (target.id === actor.id) {
       const embed = createPawsitiveEmbed('Self boop', 'accent').setDescription(

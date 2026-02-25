@@ -67,3 +67,18 @@ export function mockCase(input: string): string {
     .map((ch, i) => (i % 2 === 0 ? ch.toLowerCase() : ch.toUpperCase()))
     .join('');
 }
+
+export function textTailFromMessage(
+  content: string | undefined,
+  fullCommandName: string,
+  prefix = '!',
+): string {
+  if (!content) return '';
+
+  const normalized = content.trim();
+  const head = `${prefix}${fullCommandName}`.toLowerCase();
+
+  if (!normalized.toLowerCase().startsWith(head)) return '';
+
+  return normalized.slice(head.length).trim();
+}
